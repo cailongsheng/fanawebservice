@@ -1,11 +1,8 @@
 package com.fana.entry.pojo;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import java.time.LocalDate;
-import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 
 import lombok.*;
@@ -20,12 +17,11 @@ import lombok.experimental.Accessors;
  * @since 2022-05-11
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Accessors(chain = true)
-public class TbUser extends Model {
+@TableName("tb_web_user")
+public class TbWebUser  {
 
     private static final long serialVersionUID = 1L;
 
