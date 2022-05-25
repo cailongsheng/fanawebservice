@@ -47,6 +47,12 @@ public class TbWebUser  {
     @TableField("role_id")
     private int roleId;
 
+    /**
+     * 删除  逻辑删除
+     */
+    @TableField("is_delete")
+    private int isDelete;
+
     @TableField(value = "create_at",fill = FieldFill.INSERT)
     private LocalDateTime createAt;
     @TableField(value = "update_at",fill = FieldFill.INSERT_UPDATE)

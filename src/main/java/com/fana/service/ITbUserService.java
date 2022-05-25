@@ -15,7 +15,7 @@ import com.fana.entry.vo.LoginVo;
  */
 public interface ITbUserService extends IService<TbWebUser> {
 
-    ResponseResult login(LoginVo vo);
+
 
 
 }

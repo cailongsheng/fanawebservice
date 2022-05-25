@@ -19,20 +19,7 @@ import javax.annotation.Resource;
 
 @RestController
 @RequestMapping("/user")
-@Api(value = "用户管理模块")
+@Api(value = "用户管理模块弃用")
 public class UserController {
-
-    @Resource
-    private ITbUserService userService;
-
-    @PostMapping("/login")
-    @ApiOperation(value = "登录接口")
-    public ResponseResult login(@RequestBody LoginVo vo){
-        if(ObjectUtil.isEmpty(vo)) throw new CustomException(Status.PARAMETER_ERROR.code,Status.PARAMETER_ERROR.message);
-        if(StrUtil.isBlank(vo.getUsername())) throw new CustomException(Status.PARAMETER_ERROR.code,"Please fill in the correct username address or password.");
-        if(StrUtil.isBlank(vo.getPassword())) throw new CustomException(Status.PARAMETER_ERROR.code,"Please fill in the correct username address or password.");
-        return userService.login(vo);
-    }
-
 
 }

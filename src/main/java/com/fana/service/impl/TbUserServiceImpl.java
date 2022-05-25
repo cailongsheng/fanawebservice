@@ -27,29 +27,7 @@ import javax.annotation.Resource;
 @Service
 @Log4j2
 public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbWebUser> implements ITbUserService {
-    @Resource
-    private TbUserMapper userMapper;
 
-    @Override
-    public ResponseResult login(LoginVo vo) {
-
-        TbWebUser tbWebUser = userMapper.selectOne(new QueryWrapper<TbWebUser>()
-                .lambda().eq(TbWebUser::getUsername, vo.getUsername()));
-        if (ObjectUtil.isEmpty(tbWebUser)) {
-            log.info("用户不存在...");
-            throw new CustomException(Status.USER_VOID.code, Status.USER_VOID.message);
-        }
-        if (!MD5Util.inputPassToDbPass(vo.getPassword()).equals(tbWebUser.getPassword())) {
-            log.info("密码错误...");
-            throw new CustomException(Status.PASSWORD_ERROR.code, Status.PASSWORD_ERROR.message);
-        }
-        LoginVo response = LoginVo.builder()
-                .username(tbWebUser.getUsername())
-                .id(tbWebUser.getId().toString())
-                .roles(tbWebUser.getRoleId())
-                .build();
-        return ResponseResult.success(response);
-    }
 
 
 }

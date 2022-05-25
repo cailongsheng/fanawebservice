@@ -54,4 +54,7 @@ swagger:
 
 logging:
   config: classpath:logback-spring-dev.xml
-
+fana:
+  ip: http://localhost:8081/
+  banner:
+    imgPath: C:\Users\MI\Desktop\
