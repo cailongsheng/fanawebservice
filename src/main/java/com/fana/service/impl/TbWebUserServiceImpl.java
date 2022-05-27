@@ -1,17 +1,21 @@
 package com.fana.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fana.config.ResponseResult;
 import com.fana.config.Status;
+import com.fana.entry.pojo.TbUser;
 import com.fana.entry.pojo.TbWebUser;
 import com.fana.entry.vo.IPageVo;
 import com.fana.entry.vo.LoginVo;
 import com.fana.entry.vo.WebUserVo;
 import com.fana.exception.CustomException;
+import com.fana.mapper.TbUserMapper;
 import com.fana.mapper.TbWebUserMapper;
 import com.fana.service.ITbWebUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -37,6 +41,8 @@ public class TbWebUserServiceImpl extends ServiceImpl<TbWebUserMapper, TbWebUser
 
     @Resource
     private TbWebUserMapper webUserMapper;
+    @Resource
+    private TbUserMapper userMapper;
 
     @Override
     public ResponseResult login(LoginVo vo) {
@@ -62,30 +68,76 @@ public class TbWebUserServiceImpl extends ServiceImpl<TbWebUserMapper, TbWebUser
     @Override
     public ResponseResult getList(WebUserVo vo) {
         LogUtil.addInfoLog("获取用户列表", "/user/list", JSON.toJSON(vo));
-        IPage<TbWebUser> page = new Page<>(vo.getPageNum(), vo.getPageSize());
         QueryWrapper<TbWebUser> queryWrapper = new QueryWrapper<>();
-        IPage<TbWebUser> iPage = webUserMapper.selectPage(page, queryWrapper);
-        IPageVo build = IPageVo.builder().total(iPage.getTotal()).pageSize(iPage.getSize()).pageNum(iPage.getCurrent()).dataList(iPage.getRecords()).build();
-        return ResponseResult.success(build);
+        QueryWrapper<TbUser> query = new QueryWrapper<>();
+        if (vo.getPlatform().equals(0))//web平台
+        {
+            if (StrUtil.isNotBlank(vo.getSearch()))
+                queryWrapper.like("username", vo.getSearch()).or().like("role_id", vo.getSearch());
+            IPage<TbWebUser> page = new Page<>(vo.getPageNum(), vo.getPageSize());
+            IPage<TbWebUser> iPage = webUserMapper.selectPage(page, queryWrapper);
+            IPageVo build = IPageVo.builder().total(iPage.getTotal()).pageSize(iPage.getSize()).pageNum(iPage.getCurrent()).dataList(iPage.getRecords()).build();
+            return ResponseResult.success(build);
+        }
+        if (vo.getPlatform().equals(1))//app平台
+        {
+            if (StrUtil.isNotBlank(vo.getSearch()))
+                queryWrapper.like("email", vo.getSearch()).or().like("last_name", vo.getSearch());
+            IPage<TbUser> page = new Page<>(vo.getPageNum(), vo.getPageSize());
+            IPage<TbUser> iPage = userMapper.selectPage(page, query);
+            IPageVo build = IPageVo.builder().total(iPage.getTotal()).pageSize(iPage.getSize()).pageNum(iPage.getCurrent()).dataList(iPage.getRecords()).build();
+            return ResponseResult.success(build);
+        }
+        return ResponseResult.success();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResponseResult updateUser(WebUserVo vo) {
         LogUtil.addInfoLog("修改用户信息", "/user/update", JSON.toJSON(vo));
-        TbWebUser webUser = TbWebUser.builder().build();
-        TbWebUser tbWebUser = webUserMapper.selectById(vo.getId());
-        if (!MD5Util.inputPassToDbPass(vo.getPassword()).equals(tbWebUser.getPassword())) {
-            webUser = TbWebUser.builder().id(vo.getId()).username(vo.getUsername()).password(MD5Util.inputPassToDbPass(vo.getPassword())).roleId(vo.getRoleId()).build();
-        } else {
-            webUser = TbWebUser.builder().id(vo.getId()).username(vo.getUsername()).roleId(vo.getRoleId()).build();
+
+        if (vo.getPlatform().equals(0)) {//web
+            TbWebUser webUser = TbWebUser.builder().build();
+            TbWebUser tbWebUser = webUserMapper.selectById(vo.getId());
+            if (!MD5Util.inputPassToDbPass(vo.getPassword()).equals(tbWebUser.getPassword())) {
+                webUser = TbWebUser.builder()
+                        .id(vo.getId())
+                        .username(vo.getUsername())
+                        .password(MD5Util.inputPassToDbPass(vo.getPassword()))
+                        .roleId(vo.getRoleId())
+                        .isDelete(vo.getIsDelete())
+                        .build();
+            } else {
+                webUser = TbWebUser.builder().id(vo.getId()).username(vo.getUsername()).roleId(vo.getRoleId()).isDelete(vo.getIsDelete()).build();
+            }
+            try {
+                webUserMapper.updateById(webUser);
+            } catch (Exception e) {
+                LogUtil.addErrorLog("修改用户信息error", "/user/update", e.getMessage());
+                throw new CustomException(201, e.getMessage());
+            }
         }
-        try {
-            webUserMapper.updateById(webUser);
-        } catch (Exception e) {
-            LogUtil.addErrorLog("修改用户信息error", "/user/update", e.getMessage());
-            throw new CustomException(201, e.getMessage());
+        if (vo.getPlatform().equals(1)) {//app
+            TbUser user = TbUser.builder().build();
+            TbUser tbUser = userMapper.selectById(vo.getId());
+            if (!MD5Util.inputPassToDbPass(vo.getPassword()).equals(tbUser.getPassword())) {
+                user = user.builder()
+                        .id(vo.getId())
+                        .email(vo.getUsername())
+                        .password(MD5Util.inputPassToDbPass(vo.getPassword()))
+                        .isDelete(vo.getIsDelete())
+                        .build();
+            } else {
+                user = user.builder().id(vo.getId()).email(vo.getUsername()).isDelete(vo.getIsDelete()).build();
+            }
+            try {
+                userMapper.updateById(user);
+            } catch (Exception e) {
+                LogUtil.addErrorLog("修改用户信息error", "/user/update", e.getMessage());
+                throw new CustomException(201, e.getMessage());
+            }
         }
+
         return ResponseResult.success();
     }
 
@@ -93,19 +145,70 @@ public class TbWebUserServiceImpl extends ServiceImpl<TbWebUserMapper, TbWebUser
     @Transactional(rollbackFor = Exception.class)
     public ResponseResult selectUser(WebUserVo vo) {
         LogUtil.addInfoLog("获取用户信息详情", "/user/select", JSON.toJSON(vo));
-        TbWebUser tbWebUser = webUserMapper.selectById(vo.getId());
-        return ResponseResult.success(tbWebUser);
+        if (vo.getPlatform().equals(0)) {//web
+            TbWebUser tbWebUser = webUserMapper.selectById(vo.getId());
+            return ResponseResult.success(tbWebUser);
+        }
+        if (vo.getPlatform().equals(1)) {//app
+            TbUser tbUser = userMapper.selectById(vo.getId());
+            return ResponseResult.success(tbUser);
+        }
+        return ResponseResult.success();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResponseResult deleteUser(WebUserVo vo) {
         LogUtil.addInfoLog("delete用户信息详情", "/user/delete", JSON.toJSON(vo));
-        try {
-            webUserMapper.deleteById(vo.getId());
-        } catch (Exception e) {
-            LogUtil.addErrorLog("delete用户信息详情error", "/user/delete", e.getMessage());
-            throw new CustomException(201, e.getMessage());
+        UpdateWrapper queryWrapper = new UpdateWrapper();
+        if (vo.getPlatform().equals(0)) {//web
+            try {
+                queryWrapper.eq("id",vo.getId());
+                queryWrapper.set("id",vo.getId());
+//                webUserMapper.updateById(TbWebUser.builder().id(vo.getId()).isDelete(1).build());
+                webUserMapper.update(TbWebUser.builder().id(vo.getId()).isDelete(1).build(),queryWrapper);
+            } catch (Exception e) {
+                LogUtil.addErrorLog("delete用户信息详情error", "/user/delete", e.getMessage());
+                throw new CustomException(201, e.getMessage());
+            }
+        }
+        if (vo.getPlatform().equals(1)) {//app
+            try {
+                userMapper.updateById(TbUser.builder().id(vo.getId()).isDelete(1).build());
+            } catch (Exception e) {
+                LogUtil.addErrorLog("delete用户信息详情error", "/user/delete", e.getMessage());
+                throw new CustomException(201, e.getMessage());
+            }
+        }
+        return ResponseResult.success();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseResult addUser(WebUserVo vo) {
+        if (vo.getPlatform().equals(0)) {//web
+            try {
+                webUserMapper.insert(TbWebUser.builder()
+                        .username(vo.getUsername())
+                        .password(MD5Util.inputPassToDbPass(vo.getPassword()))
+                        .build());
+            } catch (Exception e) {
+                LogUtil.addErrorLog("add用户信息详情error", "/user/add", e.getMessage());
+                throw new CustomException(201, e.getMessage());
+            }
+        }
+        if (vo.getPlatform().equals(1)) {//app
+            try {
+                userMapper.insert(TbUser.builder()
+                        .email(vo.getUsername())
+                        .password(MD5Util.inputPassToDbPass(vo.getPassword()))
+                        .firstName(vo.getFirstName())
+                        .lastName(vo.getLastName())
+                        .build());
+            } catch (Exception e) {
+                LogUtil.addErrorLog("add用户信息详情error", "/user/add", e.getMessage());
+                throw new CustomException(201, e.getMessage());
+            }
         }
         return ResponseResult.success();
     }

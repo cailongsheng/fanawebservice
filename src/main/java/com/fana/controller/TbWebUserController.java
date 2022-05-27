@@ -91,4 +91,13 @@ public class TbWebUserController {
         return webUserService.deleteUser(vo);
     }
 
+    /**
+     * 添加用户
+     */
+    @PostMapping("/add")
+    @ApiOperation(value = "用户详情")
+    public ResponseResult addUser(@RequestBody WebUserVo vo){
+        return webUserService.addUser(vo);
+    }
+
 }

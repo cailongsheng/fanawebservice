@@ -30,4 +30,13 @@ public class WebUserVo {
     private Long pageNum;
     @ApiModelProperty(value = "每页大小")
     private Long pageSize;
+    private Integer platform;//平台
+    private String search; //条件
+    private String email;//APP 账号
+    private String firstName;//APP 名
+    private String lastName;//APP 姓
+    private String birthday;
+    private int sex;//0:女 1:男
+    private String avator;//头像
+    private int isDelete;//头像
 }

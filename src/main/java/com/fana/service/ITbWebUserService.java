@@ -24,4 +24,6 @@ public interface ITbWebUserService extends IService<TbWebUser> {
     ResponseResult selectUser(WebUserVo vo);
 
     ResponseResult deleteUser(WebUserVo vo);
+
+    ResponseResult addUser(WebUserVo vo);
 }
