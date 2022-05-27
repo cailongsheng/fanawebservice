@@ -55,6 +55,9 @@ swagger:
 logging:
   config: classpath:logback-spring-test.xml
 
-
+fana:
+  ip: http://212.129.248.79/
+  banner:
+    imgPath: /app/file/images/
 
 
