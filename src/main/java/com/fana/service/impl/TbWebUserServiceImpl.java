@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fana.config.ResponseResult;
 import com.fana.config.Status;
 import com.fana.entry.pojo.TbWebUser;
+import com.fana.entry.vo.IPageVo;
 import com.fana.entry.vo.LoginVo;
 import com.fana.entry.vo.WebUserVo;
 import com.fana.exception.CustomException;
@@ -64,7 +65,8 @@ public class TbWebUserServiceImpl extends ServiceImpl<TbWebUserMapper, TbWebUser
         IPage<TbWebUser> page = new Page<>(vo.getPageNum(), vo.getPageSize());
         QueryWrapper<TbWebUser> queryWrapper = new QueryWrapper<>();
         IPage<TbWebUser> iPage = webUserMapper.selectPage(page, queryWrapper);
-        return ResponseResult.success(iPage);
+        IPageVo build = IPageVo.builder().total(iPage.getTotal()).pageSize(iPage.getSize()).pageNum(iPage.getCurrent()).dataList(iPage.getRecords()).build();
+        return ResponseResult.success(build);
     }
 
     @Override

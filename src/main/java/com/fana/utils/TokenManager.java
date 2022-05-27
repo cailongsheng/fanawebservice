@@ -2,6 +2,7 @@ package com.fana.utils;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.security.MD5Encoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,8 @@ import java.util.concurrent.TimeUnit;
 public class TokenManager {
     @Resource
     private RedisTemplate<Object, Object> redisTemplate;
+    private final String SALE = "liuxiaoxidalianaxi";
+    private final String prefix = "fanaweb_";
 
     /**
      * 生成token
@@ -24,6 +27,7 @@ public class TokenManager {
      * */
     public String createToken(int userId){
         UUID uuid = UUID.randomUUID();  // 根据机器和时间生成唯一字符
+        String auth = MD5Util.md5(SALE + uuid.toString()).toUpperCase();
         String token = userId + "_" + uuid.toString().replace("-","");  // token = userId_uuid(去-)
         String key = userId + "_fana";
         redisTemplate.opsForValue().set(key, token,
@@ -114,5 +118,12 @@ public class TokenManager {
 //            System.out.println(e);
 //        }
         return false;
+    }
+
+    public static void main(String[] args) {
+        UUID uuid = UUID.randomUUID();  // 根据机器和时间生成唯一字符
+        String auth = MD5Util.md5("liuxiaoxidalianaxi" + uuid.toString()).toUpperCase();
+        String token = 1 + "_" + auth;
+        System.out.println( token );
     }
 }
