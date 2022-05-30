@@ -5,6 +5,7 @@ import com.fana.entry.pojo.TbWebUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fana.entry.vo.LoginVo;
 import com.fana.entry.vo.WebUserVo;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * <p>
@@ -26,4 +27,6 @@ public interface ITbWebUserService extends IService<TbWebUser> {
     ResponseResult deleteUser(WebUserVo vo);
 
     ResponseResult addUser(WebUserVo vo);
+
+    ResponseResult uploadUserImage(MultipartFile file);
 }

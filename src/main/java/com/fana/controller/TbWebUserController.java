@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 
@@ -98,6 +99,15 @@ public class TbWebUserController {
     @ApiOperation(value = "用户详情")
     public ResponseResult addUser(@RequestBody WebUserVo vo){
         return webUserService.addUser(vo);
+    }
+
+    /**
+     * 用户上传头像
+     */
+    @PostMapping("/upload")
+    @ApiOperation(value = "web用户上传头像")
+    public ResponseResult uploadUserImage(MultipartFile file){
+        return webUserService.uploadUserImage(file);
     }
 
 }

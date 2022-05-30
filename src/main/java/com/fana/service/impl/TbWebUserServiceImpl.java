@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fana.config.ResponseResult;
 import com.fana.config.Status;
@@ -19,13 +20,17 @@ import com.fana.mapper.TbUserMapper;
 import com.fana.mapper.TbWebUserMapper;
 import com.fana.service.ITbWebUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fana.utils.FileUtils;
+import com.fana.utils.LocalDateTimeFormatter;
 import com.fana.utils.LogUtil;
 import com.fana.utils.MD5Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 
 /**
  * <p>
@@ -43,6 +48,8 @@ public class TbWebUserServiceImpl extends ServiceImpl<TbWebUserMapper, TbWebUser
     private TbWebUserMapper webUserMapper;
     @Resource
     private TbUserMapper userMapper;
+    @Resource
+    FileUtils fileUtils;
 
     @Override
     public ResponseResult login(LoginVo vo) {
@@ -76,7 +83,10 @@ public class TbWebUserServiceImpl extends ServiceImpl<TbWebUserMapper, TbWebUser
                 queryWrapper.like("username", vo.getSearch()).or().like("role_id", vo.getSearch());
             IPage<TbWebUser> page = new Page<>(vo.getPageNum(), vo.getPageSize());
             IPage<TbWebUser> iPage = webUserMapper.selectPage(page, queryWrapper);
-            IPageVo build = IPageVo.builder().total(iPage.getTotal()).pageSize(iPage.getSize()).pageNum(iPage.getCurrent()).dataList(iPage.getRecords()).build();
+//            iPage.getRecords().forEach(webuser->{
+//                LocalDateTimeFormatter.getLocalDateTimeFormatter(webuser.)
+//            });
+            IPageVo build = IPageVo.builder().total(iPage.getTotal()).pageSize(iPage.getSize()).pageNum(iPage.getCurrent()).list(iPage.getRecords()).build();
             return ResponseResult.success(build);
         }
         if (vo.getPlatform().equals(1))//app平台
@@ -85,7 +95,7 @@ public class TbWebUserServiceImpl extends ServiceImpl<TbWebUserMapper, TbWebUser
                 queryWrapper.like("email", vo.getSearch()).or().like("last_name", vo.getSearch());
             IPage<TbUser> page = new Page<>(vo.getPageNum(), vo.getPageSize());
             IPage<TbUser> iPage = userMapper.selectPage(page, query);
-            IPageVo build = IPageVo.builder().total(iPage.getTotal()).pageSize(iPage.getSize()).pageNum(iPage.getCurrent()).dataList(iPage.getRecords()).build();
+            IPageVo build = IPageVo.builder().total(iPage.getTotal()).pageSize(iPage.getSize()).pageNum(iPage.getCurrent()).list(iPage.getRecords()).build();
             return ResponseResult.success(build);
         }
         return ResponseResult.success();
@@ -211,6 +221,23 @@ public class TbWebUserServiceImpl extends ServiceImpl<TbWebUserMapper, TbWebUser
             }
         }
         return ResponseResult.success();
+    }
+
+    @Override
+    public ResponseResult uploadUserImage(MultipartFile file) {
+        if(file == null){
+            return new ResponseResult(Status.PARAMETER_ERROR.code, "The file did not fill in  ");
+        }
+        String upload = null;
+        try {
+            upload = fileUtils.upload(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(StringUtils.isEmpty(upload)){
+            throw new CustomException(Status.IMAGE_UPLOAD_FAILED.getCode(),Status.IMAGE_UPLOAD_FAILED.getMessage());
+        }
+        return ResponseResult.success(upload);
     }
 
 

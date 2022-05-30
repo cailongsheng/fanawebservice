@@ -5,8 +5,11 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * <p>
@@ -54,9 +57,15 @@ public class TbWebUser  {
     private int isDelete;
 
     @TableField(value = "create_at",fill = FieldFill.INSERT)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
     private LocalDateTime createAt;
     @TableField(value = "update_at",fill = FieldFill.INSERT_UPDATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
     private LocalDateTime updateAt;
+    @TableField(exist = false)
+    private int platform = 0;
 
 
 }
