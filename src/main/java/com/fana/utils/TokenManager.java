@@ -38,7 +38,7 @@ public class TokenManager {
         String token = userId + "_" + uuid.toString().replace("-","").toUpperCase();  // token = userId_uuid(去-)
         String key = userId +prefix;
         redisTemplate.opsForValue().set(key, token,
-                1, TimeUnit.DAYS);
+                30, TimeUnit.DAYS);
         return token;
     }
 
