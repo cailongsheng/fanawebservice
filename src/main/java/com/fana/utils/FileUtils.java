@@ -24,7 +24,7 @@ public class FileUtils {
 
 
 
-    public String upload(MultipartFile file) throws IOException {
+    public String upload(MultipartFile file,String path) throws IOException {
         if (file == null) {
             return null;
         }
@@ -46,7 +46,7 @@ public class FileUtils {
             e.printStackTrace();
             return null;
         }
-        return ip + "charity" + originalFilename;
+        return ip + path + originalFilename;
     }
 
 

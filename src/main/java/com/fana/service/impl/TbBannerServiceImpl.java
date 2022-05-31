@@ -36,7 +36,7 @@ public class TbBannerServiceImpl extends ServiceImpl<TbBannerMapper, TbBanner> i
         banners.forEach(img->{
             try {
                 //上传
-                String uploadPath = fileUtils.upload(img.getFile());
+                String uploadPath = fileUtils.upload(img.getFile(),"banner");
                 bannerMapper.insert(TbBanner.builder().imageName(img.getImageName()).imagePath(uploadPath).build());
             } catch (IOException e) {
                 LogUtil.addErrorLog("上传图片文件异常", "upload/insert", "ip", e.getMessage().substring(0, 200));
