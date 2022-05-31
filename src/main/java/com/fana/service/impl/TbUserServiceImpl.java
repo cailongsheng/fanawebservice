@@ -1,5 +1,6 @@
 package com.fana.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -57,16 +58,18 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
         LogUtil.addInfoLog("修改用户信息", "/user/update", JSON.toJSON(vo));
         TbUser user = TbUser.builder().build();
         TbUser tbUser = userMapper.selectById(vo.getId());
-        if (!MD5Util.inputPassToDbPass(vo.getPassword()).equals(tbUser.getPassword())) {
-            user = user.builder()
-                    .id(vo.getId())
-                    .email(vo.getUsername())
-                    .password(MD5Util.inputPassToDbPass(vo.getPassword()))
-                    .isDelete(vo.getIsDelete())
-                    .build();
-        } else {
-            user = user.builder().id(vo.getId()).email(vo.getUsername()).isDelete(vo.getIsDelete()).build();
-        }
+        user = user.builder()
+                .id(vo.getId())
+                .email(vo.getUsername())
+                .password(!MD5Util.inputPassToDbPass(vo.getPassword()).equals(tbUser.getPassword()) ?
+                        MD5Util.inputPassToDbPass(vo.getPassword()) : tbUser.getPassword())
+                .birthday(StrUtil.isBlank(vo.getBirthday()) ? tbUser.getBirthday() : vo.getBirthday())
+                .lastName(StrUtil.isBlank(vo.getLastName()) ? "-" : vo.getLastName())
+                .firstName(StrUtil.isBlank(vo.getFirstName()) ? "-" : vo.getFirstName())
+                .avator(StrUtil.isBlank(vo.getAvator()) ? tbUser.getAvator() : vo.getAvator())
+                .isDelete(ObjectUtil.isNull(vo.getIsDelete()) ? tbUser.getIsDelete() : vo.getIsDelete())
+                .build();
+
         try {
             userMapper.updateById(user);
         } catch (Exception e) {
@@ -89,12 +92,12 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
     @Transactional(rollbackFor = Exception.class)
     public ResponseResult deleteUser(AppUserVo vo) {
         LogUtil.addInfoLog("delete用户信息详情", "/user/delete", JSON.toJSON(vo));
-            try {
-                userMapper.updateById(TbUser.builder().id(vo.getId()).isDelete(1).build());
-            } catch (Exception e) {
-                LogUtil.addErrorLog("delete用户信息详情error", "/user/delete", e.getMessage());
-                throw new CustomException(201, e.getMessage());
-            }
+        try {
+            userMapper.updateById(TbUser.builder().id(vo.getId()).isDelete(1).build());
+        } catch (Exception e) {
+            LogUtil.addErrorLog("delete用户信息详情error", "/user/delete", e.getMessage());
+            throw new CustomException(201, e.getMessage());
+        }
         return ResponseResult.success();
     }
 
@@ -104,9 +107,11 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
         try {
             userMapper.insert(TbUser.builder()
                     .email(vo.getUsername())
-                    .password(MD5Util.inputPassToDbPass(vo.getPassword()))
-                    .firstName(vo.getFirstName())
-                    .lastName(vo.getLastName())
+                    .password( MD5Util.inputPassToDbPass(vo.getPassword()))
+                    .birthday(StrUtil.isBlank(vo.getBirthday()) ? "-" : vo.getBirthday())
+                    .lastName(StrUtil.isBlank(vo.getLastName()) ? "-" : vo.getLastName())
+                    .firstName(StrUtil.isBlank(vo.getFirstName()) ? "-" : vo.getFirstName())
+                    .avator(StrUtil.isBlank(vo.getAvator()) ? "-" : vo.getAvator())
                     .build());
         } catch (Exception e) {
             LogUtil.addErrorLog("add用户信息详情error", "/user/add", e.getMessage());

@@ -38,7 +38,7 @@ public class AppUserVo {
     private String firstName;//APP 名
     private String lastName;//APP 姓
     private String birthday;
-    private int sex;//0:女 1:男
+    private Integer sex;//0:女 1:男
     private String avator;//头像
-    private int isDelete;//头像
+    private Integer isDelete;//头像
 }
