@@ -56,7 +56,7 @@ logging:
   config: classpath:logback-spring-test.xml
 
 fana:
-  ip: http://212.129.248.79/
+  ip: http://212.129.248.79:8001/
   banner:
     imgPath: /app/file/images/banner
   user:
