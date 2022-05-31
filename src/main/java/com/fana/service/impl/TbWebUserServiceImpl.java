@@ -20,10 +20,7 @@ import com.fana.mapper.TbUserMapper;
 import com.fana.mapper.TbWebUserMapper;
 import com.fana.service.ITbWebUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fana.utils.FileUtils;
-import com.fana.utils.LocalDateTimeFormatter;
-import com.fana.utils.LogUtil;
-import com.fana.utils.MD5Util;
+import com.fana.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +47,8 @@ public class TbWebUserServiceImpl extends ServiceImpl<TbWebUserMapper, TbWebUser
     private TbUserMapper userMapper;
     @Resource
     FileUtils fileUtils;
+    @Resource
+    private TokenManager tokenManager;
 
     @Override
     public ResponseResult login(LoginVo vo) {
@@ -64,10 +63,12 @@ public class TbWebUserServiceImpl extends ServiceImpl<TbWebUserMapper, TbWebUser
             log.info("密码错误...");
             throw new CustomException(Status.PASSWORD_ERROR.code, Status.PASSWORD_ERROR.message);
         }
+        String token = tokenManager.createToken(tbWebUser.getId());
         LoginVo response = LoginVo.builder()
                 .username(tbWebUser.getUsername())
                 .id(tbWebUser.getId().toString())
                 .roles(tbWebUser.getRoleId())
+                .token(token)
                 .build();
         return ResponseResult.success(response);
     }
@@ -127,26 +128,7 @@ public class TbWebUserServiceImpl extends ServiceImpl<TbWebUserMapper, TbWebUser
                 throw new CustomException(201, e.getMessage());
             }
         }
-        if (vo.getPlatform().equals(1)) {//app
-            TbUser user = TbUser.builder().build();
-            TbUser tbUser = userMapper.selectById(vo.getId());
-            if (!MD5Util.inputPassToDbPass(vo.getPassword()).equals(tbUser.getPassword())) {
-                user = user.builder()
-                        .id(vo.getId())
-                        .email(vo.getUsername())
-                        .password(MD5Util.inputPassToDbPass(vo.getPassword()))
-                        .isDelete(vo.getIsDelete())
-                        .build();
-            } else {
-                user = user.builder().id(vo.getId()).email(vo.getUsername()).isDelete(vo.getIsDelete()).build();
-            }
-            try {
-                userMapper.updateById(user);
-            } catch (Exception e) {
-                LogUtil.addErrorLog("修改用户信息error", "/user/update", e.getMessage());
-                throw new CustomException(201, e.getMessage());
-            }
-        }
+
 
         return ResponseResult.success();
     }
@@ -159,10 +141,6 @@ public class TbWebUserServiceImpl extends ServiceImpl<TbWebUserMapper, TbWebUser
             TbWebUser tbWebUser = webUserMapper.selectById(vo.getId());
             return ResponseResult.success(tbWebUser);
         }
-        if (vo.getPlatform().equals(1)) {//app
-            TbUser tbUser = userMapper.selectById(vo.getId());
-            return ResponseResult.success(tbUser);
-        }
         return ResponseResult.success();
     }
 
@@ -171,24 +149,14 @@ public class TbWebUserServiceImpl extends ServiceImpl<TbWebUserMapper, TbWebUser
     public ResponseResult deleteUser(WebUserVo vo) {
         LogUtil.addInfoLog("delete用户信息详情", "/user/delete", JSON.toJSON(vo));
         UpdateWrapper queryWrapper = new UpdateWrapper();
-        if (vo.getPlatform().equals(0)) {//web
-            try {
-                queryWrapper.eq("id",vo.getId());
-                queryWrapper.set("id",vo.getId());
+        try {
+            queryWrapper.eq("id", vo.getId());
+            queryWrapper.set("id", vo.getId());
 //                webUserMapper.updateById(TbWebUser.builder().id(vo.getId()).isDelete(1).build());
-                webUserMapper.update(TbWebUser.builder().id(vo.getId()).isDelete(1).build(),queryWrapper);
-            } catch (Exception e) {
-                LogUtil.addErrorLog("delete用户信息详情error", "/user/delete", e.getMessage());
-                throw new CustomException(201, e.getMessage());
-            }
-        }
-        if (vo.getPlatform().equals(1)) {//app
-            try {
-                userMapper.updateById(TbUser.builder().id(vo.getId()).isDelete(1).build());
-            } catch (Exception e) {
-                LogUtil.addErrorLog("delete用户信息详情error", "/user/delete", e.getMessage());
-                throw new CustomException(201, e.getMessage());
-            }
+            webUserMapper.update(TbWebUser.builder().id(vo.getId()).isDelete(1).build(), queryWrapper);
+        } catch (Exception e) {
+            LogUtil.addErrorLog("delete用户信息详情error", "/user/delete", e.getMessage());
+            throw new CustomException(201, e.getMessage());
         }
         return ResponseResult.success();
     }
@@ -196,46 +164,32 @@ public class TbWebUserServiceImpl extends ServiceImpl<TbWebUserMapper, TbWebUser
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResponseResult addUser(WebUserVo vo) {
-        if (vo.getPlatform().equals(0)) {//web
-            try {
-                webUserMapper.insert(TbWebUser.builder()
-                        .username(vo.getUsername())
-                        .password(MD5Util.inputPassToDbPass(vo.getPassword()))
-                        .build());
-            } catch (Exception e) {
-                LogUtil.addErrorLog("add用户信息详情error", "/user/add", e.getMessage());
-                throw new CustomException(201, e.getMessage());
-            }
+        try {
+            webUserMapper.insert(TbWebUser.builder()
+                    .username(vo.getUsername())
+                    .password(MD5Util.inputPassToDbPass(vo.getPassword()))
+                    .build());
+        } catch (Exception e) {
+            LogUtil.addErrorLog("add用户信息详情error", "/user/add", e.getMessage());
+            throw new CustomException(201, e.getMessage());
         }
-        if (vo.getPlatform().equals(1)) {//app
-            try {
-                userMapper.insert(TbUser.builder()
-                        .email(vo.getUsername())
-                        .password(MD5Util.inputPassToDbPass(vo.getPassword()))
-                        .firstName(vo.getFirstName())
-                        .lastName(vo.getLastName())
-                        .build());
-            } catch (Exception e) {
-                LogUtil.addErrorLog("add用户信息详情error", "/user/add", e.getMessage());
-                throw new CustomException(201, e.getMessage());
-            }
-        }
+
         return ResponseResult.success();
     }
 
     @Override
     public ResponseResult uploadUserImage(MultipartFile file) {
-        if(file == null){
+        if (file == null) {
             return new ResponseResult(Status.PARAMETER_ERROR.code, "The file did not fill in  ");
         }
         String upload = null;
         try {
-            upload = fileUtils.upload(file,"user");
+            upload = fileUtils.upload(file, "user/");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(StringUtils.isEmpty(upload)){
-            throw new CustomException(Status.IMAGE_UPLOAD_FAILED.getCode(),Status.IMAGE_UPLOAD_FAILED.getMessage());
+        if (StringUtils.isEmpty(upload)) {
+            throw new CustomException(Status.IMAGE_UPLOAD_FAILED.getCode(), Status.IMAGE_UPLOAD_FAILED.getMessage());
         }
         return ResponseResult.success(upload);
     }

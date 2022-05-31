@@ -33,4 +33,5 @@ public class LoginVo implements Serializable {
     private String lastName;
 
     private String birthday;
+    private String token;
 }

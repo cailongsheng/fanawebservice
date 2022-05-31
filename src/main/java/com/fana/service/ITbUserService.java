@@ -21,11 +21,11 @@ public interface ITbUserService extends IService<TbUser> {
 
     ResponseResult getList(AppUserVo vo);
 
-    ResponseResult updateUser(AppUserVo vo);
+    ResponseResult updateUser(AppUserVo vo,String Authorization);
 
-    ResponseResult selectUser(AppUserVo vo);
+    ResponseResult selectUser(AppUserVo vo,String Authorization);
 
-    ResponseResult deleteUser(AppUserVo vo);
+    ResponseResult deleteUser(AppUserVo vo,String Authorization);
 
     ResponseResult addUser(AppUserVo vo);
 

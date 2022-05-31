@@ -24,7 +24,7 @@
         <!--滚动输出策略-->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!--路径 项目里面的文件夹-->
-            <fileNamePattern>/app/log/admin/info.%d.log</fileNamePattern>
+            <fileNamePattern>/app/log/web/info.%d.log</fileNamePattern>
 <!--            <fileNamePattern>/app/log/staff/info.%d.log</fileNamePattern>-->
         </rollingPolicy>
     </appender>
@@ -45,7 +45,7 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!--路径-->
 <!--            <fileNamePattern>/app/log/staff/error.%d.log</fileNamePattern>-->
-            <fileNamePattern>/app/log/admin/error.%d.log</fileNamePattern>
+            <fileNamePattern>/app/log/web/error.%d.log</fileNamePattern>
         </rollingPolicy>
     </appender>
 

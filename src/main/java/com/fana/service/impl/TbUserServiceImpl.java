@@ -20,6 +20,7 @@ import com.fana.service.ITbUserService;
 import com.fana.utils.FileUtils;
 import com.fana.utils.LogUtil;
 import com.fana.utils.MD5Util;
+import com.fana.utils.TokenManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,10 +35,12 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
     TbUserMapper userMapper;
     @Resource
     FileUtils fileUtils;
+    @Resource
+    TokenManager tokenManager;
 
     @Override
     public ResponseResult getList(AppUserVo vo) {
-        LogUtil.addInfoLog("获取用户列表", "/user/list", JSON.toJSON(vo));
+        LogUtil.addInfoLog("(app)获取用户列表", "/user/app/list", JSON.toJSON(vo));
         QueryWrapper<TbUser> queryWrapper = new QueryWrapper<>();
         QueryWrapper<TbUser> query = new QueryWrapper<>();
         if (vo.getPlatform().equals(1))//app平台
@@ -54,15 +57,16 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult updateUser(AppUserVo vo) {
-        LogUtil.addInfoLog("修改用户信息", "/user/update", JSON.toJSON(vo));
+    public ResponseResult updateUser(AppUserVo vo,String Authorization) {
+        LogUtil.addInfoLog("(app)修改用户信息", "/user/app/update", JSON.toJSON(vo));
         TbUser user = TbUser.builder().build();
-        TbUser tbUser = userMapper.selectById(vo.getId());
+        TbUser tbUser = userMapper.selectById(tokenManager.getUserId(Authorization));
+        if (ObjectUtil.isNull(tbUser)) throw new CustomException(201, "The user does not exist.");
         user = user.builder()
-                .id(vo.getId())
+                .id(tokenManager.getUserId(Authorization))
                 .email(vo.getUsername())
-                .password(!MD5Util.inputPassToDbPass(vo.getPassword()).equals(tbUser.getPassword()) ?
-                        MD5Util.inputPassToDbPass(vo.getPassword()) : tbUser.getPassword())
+                .password(StrUtil.isNotBlank(vo.getPassword())?!MD5Util.inputPassToDbPass(vo.getPassword()).equals(tbUser.getPassword()) ?
+                        MD5Util.inputPassToDbPass(vo.getPassword()) : tbUser.getPassword():tbUser.getPassword())
                 .birthday(StrUtil.isBlank(vo.getBirthday()) ? tbUser.getBirthday() : vo.getBirthday())
                 .lastName(StrUtil.isBlank(vo.getLastName()) ? "-" : vo.getLastName())
                 .firstName(StrUtil.isBlank(vo.getFirstName()) ? "-" : vo.getFirstName())
@@ -73,7 +77,7 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
         try {
             userMapper.updateById(user);
         } catch (Exception e) {
-            LogUtil.addErrorLog("修改用户信息error", "/user/update", e.getMessage());
+            LogUtil.addErrorLog("(app)修改用户信息error", "/user/app/update", e.getMessage());
             throw new CustomException(201, e.getMessage());
         }
 
@@ -82,20 +86,20 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult selectUser(AppUserVo vo) {
-        LogUtil.addInfoLog("获取用户信息详情", "/user/select", JSON.toJSON(vo));
-        TbUser tbUser = userMapper.selectById(vo.getId());
+    public ResponseResult selectUser(AppUserVo vo,String Authorization) {
+        LogUtil.addInfoLog("(app)获取用户信息详情", "/user/app/select", JSON.toJSON(vo));
+        TbUser tbUser = userMapper.selectById(tokenManager.getUserId(Authorization));
         return ResponseResult.success(tbUser);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteUser(AppUserVo vo) {
-        LogUtil.addInfoLog("delete用户信息详情", "/user/delete", JSON.toJSON(vo));
+    public ResponseResult deleteUser(AppUserVo vo,String Authorization) {
+        LogUtil.addInfoLog("(app)delete用户信息详情", "/user/app/delete", JSON.toJSON(vo));
         try {
-            userMapper.updateById(TbUser.builder().id(vo.getId()).isDelete(1).build());
+            userMapper.updateById(TbUser.builder().id(tokenManager.getUserId(Authorization)).isDelete(1).build());
         } catch (Exception e) {
-            LogUtil.addErrorLog("delete用户信息详情error", "/user/delete", e.getMessage());
+            LogUtil.addErrorLog("(app)delete用户信息详情error", "/user/delete", e.getMessage());
             throw new CustomException(201, e.getMessage());
         }
         return ResponseResult.success();
@@ -104,6 +108,7 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResponseResult addUser(AppUserVo vo) {
+        LogUtil.addInfoLog("(app)添加用户信息详情", "/user/app/add", JSON.toJSON(vo));
         try {
             userMapper.insert(TbUser.builder()
                     .email(vo.getUsername())
@@ -114,7 +119,7 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
                     .avator(StrUtil.isBlank(vo.getAvator()) ? "-" : vo.getAvator())
                     .build());
         } catch (Exception e) {
-            LogUtil.addErrorLog("add用户信息详情error", "/user/add", e.getMessage());
+            LogUtil.addErrorLog("add用户信息详情error", "/user/app/add", e.getMessage());
             throw new CustomException(201, e.getMessage());
         }
         return ResponseResult.success();
@@ -122,12 +127,13 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
 
     @Override
     public ResponseResult uploadUserImage(MultipartFile file) {
+        LogUtil.addInfoLog("(app)用户头像上传", "/user/app/upload", null);
         if (file == null) {
             return new ResponseResult(Status.PARAMETER_ERROR.code, "The file did not fill in  ");
         }
         String upload = null;
         try {
-            upload = fileUtils.upload(file,"user");
+            upload = fileUtils.upload(file,"user/");
         } catch (IOException e) {
             e.printStackTrace();
         }

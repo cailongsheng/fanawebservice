@@ -11,10 +11,7 @@ import com.fana.service.ITbUserService;
 import com.fana.utils.RegexUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -50,8 +47,8 @@ public class UserController {
      */
     @PostMapping("/update")
     @ApiOperation(value = "用户列表")
-    public ResponseResult updateUser(@RequestBody AppUserVo vo){
-        return userService.updateUser(vo);
+    public ResponseResult updateUser(@RequestBody AppUserVo vo, @RequestHeader String Authorization){
+        return userService.updateUser(vo,Authorization);
     }
 
     /**
@@ -59,8 +56,8 @@ public class UserController {
      */
     @PostMapping("/select")
     @ApiOperation(value = "用户详情")
-    public ResponseResult selectUser(@RequestBody AppUserVo vo){
-        return userService.selectUser(vo);
+    public ResponseResult selectUser(@RequestBody AppUserVo vo, @RequestHeader String Authorization){
+        return userService.selectUser(vo,Authorization);
     }
 
     /**
@@ -68,8 +65,8 @@ public class UserController {
      */
     @PostMapping("/delete")
     @ApiOperation(value = "用户详情")
-    public ResponseResult deleteUser(@RequestBody AppUserVo vo){
-        return userService.deleteUser(vo);
+    public ResponseResult deleteUser(@RequestBody AppUserVo vo,@RequestHeader String Authorization){
+        return userService.deleteUser(vo,Authorization);
     }
 
     /**
@@ -85,7 +82,7 @@ public class UserController {
      * 用户上传头像
      */
     @PostMapping("/upload")
-    @ApiOperation(value = "web用户上传头像")
+    @ApiOperation(value = "app用户上传头像")
     public ResponseResult uploadUserImage(MultipartFile file){
         return userService.uploadUserImage(file);
     }
