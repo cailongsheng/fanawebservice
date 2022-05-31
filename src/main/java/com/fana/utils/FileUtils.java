@@ -3,6 +3,7 @@ package com.fana.utils;
 import cn.hutool.core.lang.UUID;
 import com.fana.config.Status;
 import com.fana.exception.CustomException;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 @Component
+@Log4j2
 public class FileUtils {
 
     @Value("${fana.ip}")
@@ -25,21 +27,30 @@ public class FileUtils {
     @Value("${spring.profiles.active}")
     private String active;
 
-    private HashMap<String,String> filePathType = new HashMap<String, String>(){
+    private HashMap<String,String> pathDev = new HashMap<String, String>(){
         {
-            if("test".equals(active)) {
-                this.put("banner", "/app/file/images/banner/");
-                this.put("achievement", "/app/file/images/achievement/");
-                this.put("charity", "/app/file/images/charity/");
-            }else{
-                this.put("banner", "C:\\Users\\27466\\Desktop\\fana\\banner\\");
-                this.put("achievement", "C:\\Users\\27466\\Desktop\\fana\\achievement\\");
-                this.put("charity", "C:\\Users\\27466\\Desktop\\fana\\charity\\");
-            }
+            this.put("banner", "C:\\Users\\27466\\Desktop\\fana\\banner\\");
+            this.put("achievement", "C:\\Users\\27466\\Desktop\\fana\\achievement\\");
+            this.put("charity", "C:\\Users\\27466\\Desktop\\fana\\charity\\");
+            System.out.println("dsfegeg");
 
         }
     };
+    private HashMap<String,String> pathTest = new HashMap<String, String>(){
+        {
+            this.put("banner", "/app/file/images/banner/");
+            this.put("achievement", "/app/file/images/achievement/");
+            this.put("charity", "/app/file/images/charity/");
+        }
+    };
 
+    public String getPathActive(String prefix){
+        if("dev".equals(active)){
+            return pathDev.get(prefix);
+        }else{
+            return pathTest.get(prefix);
+        }
+    }
 
     public String upload(MultipartFile file,String path) throws IOException {
         if (file == null) {
@@ -79,8 +90,8 @@ public class FileUtils {
         String fileName = file.getOriginalFilename();
         String fileTyle = fileName.substring(fileName.lastIndexOf("."), fileName.length());
         String originalFilename = UUID.randomUUID().toString() + fileTyle;
-        String filePath = filePathType.get(prefix) + originalFilename;//   /app/file/images/charity
-        System.out.println(filePath);
+        String filePath = getPathActive(prefix) + originalFilename;//   /app/file/images/charity
+        log.info(filePath);
         try {
             file.transferTo(new File(filePath));
         } catch (IOException e) {
@@ -92,7 +103,7 @@ public class FileUtils {
 
     public Boolean deleteByFile(String fileUrl){
         try {
-            String s = filePathType.get(fileUrl.split("/")[3]);
+            String s = getPathActive(fileUrl.split("/")[3]);
             if (new File(s + fileUrl.split("/")[4]).exists()) {
                 FileSystemUtils.deleteRecursively(new File(s + fileUrl.split("/")[4]));
             }
