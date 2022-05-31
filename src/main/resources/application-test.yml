@@ -58,6 +58,8 @@ logging:
 fana:
   ip: http://212.129.248.79/
   banner:
-    imgPath: /app/file/images/
+    imgPath: /app/file/images/banner
+  user:
+    imagePath: /app/file/images/user
 
 

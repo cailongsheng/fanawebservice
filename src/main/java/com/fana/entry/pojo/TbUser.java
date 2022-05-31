@@ -75,16 +75,16 @@ public class TbUser extends Model {
      * 创建时间
      */
     @TableField(value = "create_at",fill = FieldFill.INSERT)
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
+    @DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss")
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="dd/MM/yyyy")
     private LocalDateTime createAt;
 
     /**
      * 修改时间
      */
     @TableField(value = "update_at",fill = FieldFill.INSERT_UPDATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")//序列化
-    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")//反序列化
+    @DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss")//序列化
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="dd/MM/yyyy")//反序列化
     private LocalDateTime updateAt;
 
     /**
