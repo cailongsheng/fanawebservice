@@ -60,7 +60,7 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
         TbUser tbUser = userMapper.selectById(tokenManager.getUserId(Authorization));
         if (ObjectUtil.isNull(tbUser)) throw new CustomException(201, "The user does not exist.");
         user = user.builder()
-                .id(tokenManager.getUserId(Authorization))
+                .id(vo.getId())
                 .email(vo.getUsername())
                 .password(StrUtil.isNotBlank(vo.getPassword()) ? !MD5Util.inputPassToDbPass(vo.getPassword()).equals(tbUser.getPassword()) ?
                         MD5Util.inputPassToDbPass(vo.getPassword()) : tbUser.getPassword() : tbUser.getPassword())
@@ -95,7 +95,7 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
     public ResponseResult deleteUser(AppUserVo vo, String Authorization) {
         LogUtil.addInfoLog("(app)delete用户信息详情", "/user/app/delete", JSON.toJSON(vo));
         try {
-            userMapper.updateById(TbUser.builder().id(tokenManager.getUserId(Authorization)).isDelete(1).build());
+            userMapper.updateById(TbUser.builder().id(vo.getId()).isDelete(1).build());
         } catch (Exception e) {
             LogUtil.addErrorLog("(app)delete用户信息详情error", "/user/delete", e.getMessage());
             throw new CustomException(201, e.getMessage());
