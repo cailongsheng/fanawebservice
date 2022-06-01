@@ -19,6 +19,8 @@ public enum Status {
     CODE_EQUALS_FALSE(1007,"The verification code you entered is incorrect"),
     USER_VOID(1008,"user viod"),
     IMAGE_UPLOAD_FAILED(1009,"image upload false"),
+    FILE_DELETE_ERROR(1010,"File deletion failed"),
+    CHARITY_NOT_EXIXT(1011,"Data does not exist"),
     //token校验
     TOKEN_ERROR(2001,"token error"),
     ;
