@@ -20,11 +20,11 @@ public interface ITbWebUserService extends IService<TbWebUser> {
 
     ResponseResult getList(WebUserVo vo);
 
-    ResponseResult updateUser(WebUserVo vo);
+    ResponseResult updateUser(WebUserVo vo, String Authorization);
 
-    ResponseResult selectUser(WebUserVo vo);
+    ResponseResult selectUser(WebUserVo vo, String Authorization);
 
-    ResponseResult deleteUser(WebUserVo vo);
+    ResponseResult deleteUser(WebUserVo vo, String Authorization);
 
     ResponseResult addUser(WebUserVo vo);
 

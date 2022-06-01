@@ -12,11 +12,8 @@ import com.fana.service.ITbUserService;
 import com.fana.service.ITbWebUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -70,8 +67,8 @@ public class TbWebUserController {
      */
     @PostMapping("/update")
     @ApiOperation(value = "用户列表")
-    public ResponseResult updateUser(@RequestBody WebUserVo vo){
-        return webUserService.updateUser(vo);
+    public ResponseResult updateUser(@RequestBody WebUserVo vo, @RequestHeader String Authorization){
+        return webUserService.updateUser(vo,Authorization);
     }
 
     /**
@@ -79,8 +76,8 @@ public class TbWebUserController {
      */
     @PostMapping("/select")
     @ApiOperation(value = "用户详情")
-    public ResponseResult selectUser(@RequestBody WebUserVo vo){
-        return webUserService.selectUser(vo);
+    public ResponseResult selectUser(@RequestBody WebUserVo vo, @RequestHeader String Authorization){
+        return webUserService.selectUser(vo,Authorization);
     }
 
     /**
@@ -88,8 +85,8 @@ public class TbWebUserController {
      */
     @PostMapping("/delete")
     @ApiOperation(value = "用户详情")
-    public ResponseResult deleteUser(@RequestBody WebUserVo vo){
-        return webUserService.deleteUser(vo);
+    public ResponseResult deleteUser(@RequestBody WebUserVo vo, @RequestHeader String Authorization){
+        return webUserService.deleteUser(vo,Authorization);
     }
 
     /**

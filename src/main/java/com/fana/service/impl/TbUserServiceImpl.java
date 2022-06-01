@@ -43,21 +43,17 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
         LogUtil.addInfoLog("(app)获取用户列表", "/user/app/list", JSON.toJSON(vo));
         QueryWrapper<TbUser> queryWrapper = new QueryWrapper<>();
         QueryWrapper<TbUser> query = new QueryWrapper<>();
-        if (vo.getPlatform().equals(1))//app平台
-        {
-            if (StrUtil.isNotBlank(vo.getSearch()))
-                queryWrapper.like("email", vo.getSearch()).or().like("last_name", vo.getSearch());
-            IPage<TbUser> page = new Page<>(vo.getPageNum(), vo.getPageSize());
-            IPage<TbUser> iPage = userMapper.selectPage(page, query);
-            IPageVo build = IPageVo.builder().total(iPage.getTotal()).pageSize(iPage.getSize()).pageNum(iPage.getCurrent()).list(iPage.getRecords()).build();
-            return ResponseResult.success(build);
-        }
-        return ResponseResult.success();
+        if (StrUtil.isNotBlank(vo.getSearch()))
+            queryWrapper.like("email", vo.getSearch()).or().like("last_name", vo.getSearch());
+        IPage<TbUser> page = new Page<>(vo.getPageNum(), vo.getPageSize());
+        IPage<TbUser> iPage = userMapper.selectPage(page, query);
+        IPageVo build = IPageVo.builder().total(iPage.getTotal()).pageSize(iPage.getSize()).pageNum(iPage.getCurrent()).list(iPage.getRecords()).build();
+        return ResponseResult.success(build);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult updateUser(AppUserVo vo,String Authorization) {
+    public ResponseResult updateUser(AppUserVo vo, String Authorization) {
         LogUtil.addInfoLog("(app)修改用户信息", "/user/app/update", JSON.toJSON(vo));
         TbUser user = TbUser.builder().build();
         TbUser tbUser = userMapper.selectById(tokenManager.getUserId(Authorization));
@@ -65,8 +61,8 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
         user = user.builder()
                 .id(tokenManager.getUserId(Authorization))
                 .email(vo.getUsername())
-                .password(StrUtil.isNotBlank(vo.getPassword())?!MD5Util.inputPassToDbPass(vo.getPassword()).equals(tbUser.getPassword()) ?
-                        MD5Util.inputPassToDbPass(vo.getPassword()) : tbUser.getPassword():tbUser.getPassword())
+                .password(StrUtil.isNotBlank(vo.getPassword()) ? !MD5Util.inputPassToDbPass(vo.getPassword()).equals(tbUser.getPassword()) ?
+                        MD5Util.inputPassToDbPass(vo.getPassword()) : tbUser.getPassword() : tbUser.getPassword())
                 .birthday(StrUtil.isBlank(vo.getBirthday()) ? tbUser.getBirthday() : vo.getBirthday())
                 .lastName(StrUtil.isBlank(vo.getLastName()) ? "-" : vo.getLastName())
                 .firstName(StrUtil.isBlank(vo.getFirstName()) ? "-" : vo.getFirstName())
@@ -86,7 +82,7 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult selectUser(AppUserVo vo,String Authorization) {
+    public ResponseResult selectUser(AppUserVo vo, String Authorization) {
         LogUtil.addInfoLog("(app)获取用户信息详情", "/user/app/select", JSON.toJSON(vo));
         TbUser tbUser = userMapper.selectById(tokenManager.getUserId(Authorization));
         return ResponseResult.success(tbUser);
@@ -94,7 +90,7 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteUser(AppUserVo vo,String Authorization) {
+    public ResponseResult deleteUser(AppUserVo vo, String Authorization) {
         LogUtil.addInfoLog("(app)delete用户信息详情", "/user/app/delete", JSON.toJSON(vo));
         try {
             userMapper.updateById(TbUser.builder().id(tokenManager.getUserId(Authorization)).isDelete(1).build());
@@ -112,7 +108,7 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
         try {
             userMapper.insert(TbUser.builder()
                     .email(vo.getUsername())
-                    .password( MD5Util.inputPassToDbPass(vo.getPassword()))
+                    .password(MD5Util.inputPassToDbPass(vo.getPassword()))
                     .birthday(StrUtil.isBlank(vo.getBirthday()) ? "-" : vo.getBirthday())
                     .lastName(StrUtil.isBlank(vo.getLastName()) ? "-" : vo.getLastName())
                     .firstName(StrUtil.isBlank(vo.getFirstName()) ? "-" : vo.getFirstName())
@@ -133,7 +129,7 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
         }
         String upload = null;
         try {
-            upload = fileUtils.upload(file,"user/");
+            upload = fileUtils.upload(file, "user/");
         } catch (IOException e) {
             e.printStackTrace();
         }
