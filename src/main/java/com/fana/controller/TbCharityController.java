@@ -31,7 +31,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/charity")
 @CrossOrigin
-@Api
+@Api("机构")
 public class TbCharityController {
     @Resource
     private ITbCharityService charityService;

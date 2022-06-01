@@ -4,6 +4,7 @@ package com.fana.controller;
 import com.fana.config.ResponseResult;
 import com.fana.entry.vo.BannerVo;
 import com.fana.service.ITbBannerService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,8 @@ import java.util.List;
  * @since 2022-05-23
  */
 @RestController
-@RequestMapping("/banner")
+@RequestMapping("/tb-banner")
+@Api("轮询图")
 public class TbBannerController {
     @Resource
     ITbBannerService bannerService;
