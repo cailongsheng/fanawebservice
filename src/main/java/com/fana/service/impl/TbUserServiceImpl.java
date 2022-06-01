@@ -68,6 +68,7 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
                 .lastName(StrUtil.isBlank(vo.getLastName()) ? "-" : vo.getLastName())
                 .firstName(StrUtil.isBlank(vo.getFirstName()) ? "-" : vo.getFirstName())
                 .avator(StrUtil.isBlank(vo.getAvator()) ? tbUser.getAvator() : vo.getAvator())
+                .sex(ObjectUtil.isNotNull(vo.getSex()) ? tbUser.getSex() : vo.getSex())
                 .isDelete(ObjectUtil.isNull(vo.getIsDelete()) ? tbUser.getIsDelete() : vo.getIsDelete())
                 .build();
 

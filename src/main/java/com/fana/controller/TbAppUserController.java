@@ -19,7 +19,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/user/app")
 @Api(value = "app用户管理模块弃用")
-public class UserController {
+public class TbAppUserController {
     @Resource
     ITbUserService userService;
     /**
