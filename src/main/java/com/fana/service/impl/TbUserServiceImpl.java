@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> implements ITbUserService {
@@ -106,6 +107,8 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
     public ResponseResult addUser(AppUserVo vo) {
         LogUtil.addInfoLog("(app)添加用户信息详情", "/user/app/add", JSON.toJSON(vo));
         try {
+            List<TbUser> tbWebUsers = userMapper.selectList(new QueryWrapper<TbUser>().lambda().eq(TbUser::getEmail, vo.getUsername()));
+            if (!tbWebUsers.isEmpty())  return new ResponseResult(201,"username is exist");
             userMapper.insert(TbUser.builder()
                     .email(vo.getUsername())
                     .password(MD5Util.inputPassToDbPass(vo.getPassword()))

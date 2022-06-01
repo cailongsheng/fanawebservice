@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * <p>
@@ -147,6 +148,8 @@ public class TbWebUserServiceImpl extends ServiceImpl<TbWebUserMapper, TbWebUser
     @Transactional(rollbackFor = Exception.class)
     public ResponseResult addUser(WebUserVo vo) {
         try {
+            List<TbWebUser> tbWebUsers = webUserMapper.selectList(new QueryWrapper<TbWebUser>().lambda().eq(TbWebUser::getUsername, vo.getUsername()));
+            if (!tbWebUsers.isEmpty())  return new ResponseResult(201,"username is exist");
             webUserMapper.insert(TbWebUser.builder()
                     .username(vo.getUsername())
                     .password(MD5Util.inputPassToDbPass(vo.getPassword()))
