@@ -32,6 +32,7 @@ public class FileType {
         FILE_TYPE_MAP.put("255044462d312e350d0a", "pdf"); //Adobe Acrobat (pdf)
         FILE_TYPE_MAP.put("504b0304140006000800", "docx");//docx文件
         FILE_TYPE_MAP.put("d0cf11e0a1b11ae10000", "xls");//xls
+        FILE_TYPE_MAP.put("00000020667479706d70", ".mp4");
 
     }
 
