@@ -19,7 +19,7 @@ import java.util.List;
  * @since 2022-05-23
  */
 @RestController
-@RequestMapping("/tb-banner")
+@RequestMapping("/banner")
 public class TbBannerController {
     @Resource
     ITbBannerService bannerService;
