@@ -1,6 +1,7 @@
 package com.fana.utils;
 
 import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.StrUtil;
 import com.fana.config.Status;
 import com.fana.exception.CustomException;
 import lombok.extern.log4j.Log4j2;
@@ -32,7 +33,7 @@ public class FileUtils {
             this.put("banner", "C:\\Users\\27466\\Desktop\\fana\\banner\\");
             this.put("achievement", "C:\\Users\\27466\\Desktop\\fana\\achievement\\");
             this.put("charity", "C:\\Users\\27466\\Desktop\\fana\\charity\\");
-            System.out.println("dsfegeg");
+            this.put("user", "C:\\Users\\27466\\Desktop\\fana\\user\\");
 
         }
     };
@@ -41,15 +42,30 @@ public class FileUtils {
             this.put("banner", "/app/file/images/banner/");
             this.put("achievement", "/app/file/images/achievement/");
             this.put("charity", "/app/file/images/charity/");
+            this.put("user", "/app/file/images/user/");
+
         }
     };
 
+    /**
+     * 通过前缀获取文件路径
+     * @param prefix
+     * @return
+     */
     public String getPathActive(String prefix){
+        HashMap<String,String> map = null;
         if("dev".equals(active)){
-            return pathDev.get(prefix);
+            map = pathDev;
+            String s = pathDev.get(prefix);
+//            return pathDev.get(prefix);
         }else{
-            return pathTest.get(prefix);
+            map = pathTest;
+//            return pathTest.get(prefix);
         }
+//        if(StrUtil.isBlank(map.get(prefix))){
+//            throw new CustomException(200,"success");
+//        }
+        return map.get(prefix);
     }
 
     public String upload(MultipartFile file,String path) throws IOException {
@@ -76,6 +92,14 @@ public class FileUtils {
         }
         return ip + path + originalFilename;
     }
+
+    /**
+     * 上传文件根据前缀上传至指定对应目录
+     * @param file
+     * @param prefix
+     * @return
+     * @throws IOException
+     */
     public String uploadFile(MultipartFile file,String prefix) throws IOException {
         if (file == null) {
             return null;
@@ -101,6 +125,11 @@ public class FileUtils {
         return ip + prefix+"/"+ originalFilename;
     }
 
+    /**
+     * 删除文件，通过文件url截取路径中前缀删除对应路径中的文件
+     * @param fileUrl
+     * @return
+     */
     public Boolean deleteByFile(String fileUrl){
         try {
             String s = getPathActive(fileUrl.split("/")[3]);
@@ -114,6 +143,15 @@ public class FileUtils {
         }
     }
 
+    public String getFileName(String fileUrl){
+        try {
+            String s = fileUrl.split("/")[4];
+            return s;
+        }catch (Exception e){
+            e.printStackTrace();
+            return "";
+        }
+    }
 
     public String uploadAutograph(MultipartFile file) throws IOException {
         if (file == null) {

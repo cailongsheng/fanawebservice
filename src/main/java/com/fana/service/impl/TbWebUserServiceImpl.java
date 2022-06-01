@@ -166,7 +166,7 @@ public class TbWebUserServiceImpl extends ServiceImpl<TbWebUserMapper, TbWebUser
         }
         String upload = null;
         try {
-            upload = fileUtils.upload(file, "user/");
+            upload = fileUtils.uploadFile(file, "user");
         } catch (IOException e) {
             e.printStackTrace();
         }
