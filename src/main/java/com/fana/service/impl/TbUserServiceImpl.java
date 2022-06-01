@@ -116,6 +116,7 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
                     .birthday(StrUtil.isBlank(vo.getBirthday()) ? "-" : vo.getBirthday())
                     .lastName(StrUtil.isBlank(vo.getLastName()) ? "-" : vo.getLastName())
                     .firstName(StrUtil.isBlank(vo.getFirstName()) ? "-" : vo.getFirstName())
+                    .sex(ObjectUtil.isNull(vo.getSex()) ? vo.getSex() : vo.getSex())
                     .avator(StrUtil.isBlank(vo.getAvator()) ? "-" : vo.getAvator())
                     .build());
         } catch (Exception e) {
@@ -133,7 +134,7 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
         }
         String upload = null;
         try {
-            upload = fileUtils.upload(file, "user/");
+            upload = fileUtils.uploadFile(file, "user");
         } catch (IOException e) {
             e.printStackTrace();
         }
