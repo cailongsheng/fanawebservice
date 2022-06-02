@@ -1,6 +1,7 @@
 package com.fana.entry.vo;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 @Data
