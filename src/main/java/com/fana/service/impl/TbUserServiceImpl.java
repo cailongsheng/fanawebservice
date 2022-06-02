@@ -21,6 +21,7 @@ import com.fana.utils.FileUtils;
 import com.fana.utils.LogUtil;
 import com.fana.utils.MD5Util;
 import com.fana.utils.TokenManager;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,6 +39,8 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
     FileUtils fileUtils;
     @Resource
     TokenManager tokenManager;
+    @Value("${fana.ip}")
+    private String fanaIp;
 
     @Override
     public ResponseResult getList(AppUserVo vo) {
@@ -48,6 +51,11 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
             queryWrapper.like("email", vo.getSearch()).or().like("last_name", vo.getSearch());
         IPage<TbUser> page = new Page<>(vo.getPageNum(), vo.getPageSize());
         IPage<TbUser> iPage = userMapper.selectPage(page, query);
+        iPage.getRecords().stream().forEach(a->{
+            if(StrUtil.isNotBlank(a.getAvator())){
+                a.setAvator(fanaIp+"user/"+a.getAvator());
+            }
+        });
         IPageVo build = IPageVo.builder().total(iPage.getTotal()).pageSize(iPage.getSize()).pageNum(iPage.getCurrent()).list(iPage.getRecords()).build();
         return ResponseResult.success(build);
     }
@@ -67,7 +75,7 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
                 .birthday(StrUtil.isBlank(vo.getBirthday()) ? tbUser.getBirthday() : vo.getBirthday())
                 .lastName(StrUtil.isBlank(vo.getLastName()) ? "-" : vo.getLastName())
                 .firstName(StrUtil.isBlank(vo.getFirstName()) ? "-" : vo.getFirstName())
-                .avator(StrUtil.isBlank(vo.getAvator()) ? tbUser.getAvator() : vo.getAvator())
+                .avator(StrUtil.isBlank(vo.getAvator()) ? tbUser.getAvator() : fileUtils.getFileName(vo.getAvator()))
                 .sex(ObjectUtil.isNull(vo.getSex()) ? tbUser.getSex() : vo.getSex())
                 .isDelete(ObjectUtil.isNull(vo.getIsDelete()) ? tbUser.getIsDelete() : vo.getIsDelete())
                 .build();
@@ -87,6 +95,9 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
     public ResponseResult selectUser(AppUserVo vo, String Authorization) {
         LogUtil.addInfoLog("(app)获取用户信息详情", "/user/app/select", JSON.toJSON(vo));
         TbUser tbUser = userMapper.selectById(tokenManager.getUserId(Authorization));
+        if(StrUtil.isNotBlank(tbUser.getAvator())){
+            tbUser.setAvator(fanaIp+"user/"+tbUser.getAvator());
+        }
         return ResponseResult.success(tbUser);
     }
 
@@ -116,7 +127,8 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
                     .birthday(StrUtil.isBlank(vo.getBirthday()) ? "-" : vo.getBirthday())
                     .lastName(StrUtil.isBlank(vo.getLastName()) ? "-" : vo.getLastName())
                     .firstName(StrUtil.isBlank(vo.getFirstName()) ? "-" : vo.getFirstName())
-                    .avator(StrUtil.isBlank(vo.getAvator()) ? "-" : vo.getAvator())
+                    .sex(ObjectUtil.isNull(vo.getSex()) ? vo.getSex() : vo.getSex())
+                    .avator(StrUtil.isBlank(vo.getAvator()) ? "" : fileUtils.getFileName(vo.getAvator()))
                     .build());
         } catch (Exception e) {
             LogUtil.addErrorLog("add用户信息详情error", "/user/app/add", e.getMessage());

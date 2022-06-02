@@ -18,6 +18,7 @@ import com.fana.mapper.TbUserCharityMapper;
 import com.fana.service.ITbCharityService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fana.utils.FileUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +46,8 @@ public class TbCharityServiceImpl extends ServiceImpl<TbCharityMapper, TbCharity
     private TbUserCharityMapper userCharityMapper;
     @Resource
     private FileUtils fileUtils;
+    @Value("${fana.ip}")
+    private String fanaIp;
 
     @Override
     public ResponseResult getCharityCategory() {
@@ -67,6 +70,11 @@ public class TbCharityServiceImpl extends ServiceImpl<TbCharityMapper, TbCharity
         Integer charityListCount = charityMapper.getCharityListCount(vo);
         iPageVo.setTotal(charityListCount.longValue());
         iPageVo.setList(list);
+        list.stream().forEach(a->{
+            if(StrUtil.isNotBlank(a.getImageUrl())){
+                a.setImageUrl(fanaIp+"charity/"+a.getImageUrl());
+            }
+        });
         return ResponseResult.success(iPageVo);
     }
 
@@ -78,7 +86,7 @@ public class TbCharityServiceImpl extends ServiceImpl<TbCharityMapper, TbCharity
         charity.setCreateAt(LocalDateTime.now());
         charity.setUpdateAt(LocalDateTime.now());
         charity.setDescription(vo.getDescription());
-        charity.setImageUrl(vo.getImageUrl());
+        charity.setImageUrl(fileUtils.getFileName(vo.getImageUrl()));
         charity.setIsShow(vo.getIsShow());
         charity.setWebsite(vo.getWebsite());
         if(StrUtil.isBlank(vo.getMeans())){
@@ -101,8 +109,8 @@ public class TbCharityServiceImpl extends ServiceImpl<TbCharityMapper, TbCharity
         charity.setCreateAt(LocalDateTime.now());
         charity.setUpdateAt(LocalDateTime.now());
         charity.setDescription(vo.getDescription());
-        fileUtils.deleteByFile(charity.getImageUrl());
-        charity.setImageUrl(vo.getImageUrl());
+        fileUtils.deleteByFileName(charity.getImageUrl(),"charity");
+        charity.setImageUrl(fileUtils.getFileName(vo.getImageUrl()));
         charity.setIsShow(vo.getIsShow());
         charity.setWebsite(vo.getWebsite());
         if(StrUtil.isBlank(vo.getMeans())){
@@ -121,7 +129,7 @@ public class TbCharityServiceImpl extends ServiceImpl<TbCharityMapper, TbCharity
         if(ObjectUtil.isEmpty(charity)){
             throw new CustomException(Status.CHARITY_NOT_EXIXT.code,Status.CHARITY_NOT_EXIXT.message);
         }
-        fileUtils.deleteByFile(charity.getImageUrl());
+        fileUtils.deleteByFileName(charity.getImageUrl(),"charity");
         charityMapper.deleteById(vo.getId());
         userCharityMapper.delete(new QueryWrapper<TbUserCharity>().lambda().eq(TbUserCharity::getCharityId,charity.getId()));
         return ResponseResult.success();

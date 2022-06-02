@@ -114,7 +114,11 @@ public class FileUtils {
         String fileName = file.getOriginalFilename();
         String fileTyle = fileName.substring(fileName.lastIndexOf("."), fileName.length());
         String originalFilename = UUID.randomUUID().toString() + fileTyle;
-        String filePath = getPathActive(prefix) + originalFilename;//   /app/file/images/charity
+        String pathActive = getPathActive(prefix);
+        if(StrUtil.isBlank(pathActive)){
+            return "";
+        }
+        String filePath =  pathActive+ originalFilename;//   /app/file/images/charity
         log.info(filePath);
         try {
             file.transferTo(new File(filePath));
@@ -133,8 +137,30 @@ public class FileUtils {
     public Boolean deleteByFile(String fileUrl){
         try {
             String s = getPathActive(fileUrl.split("/")[3]);
+            if(StrUtil.isBlank(s)){
+                return true;
+            }
             if (new File(s + fileUrl.split("/")[4]).exists()) {
                 FileSystemUtils.deleteRecursively(new File(s + fileUrl.split("/")[4]));
+            }
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public Boolean deleteByFileName(String filename,String prefix){
+        try {
+            if(StrUtil.isBlank(filename)){
+                return true;
+            }
+            String pathActive = getPathActive(prefix);
+            if(StrUtil.isBlank(pathActive)){
+                return true;
+            }
+            if (new File(pathActive+ filename).exists()) {
+                FileSystemUtils.deleteRecursively(new File(pathActive+ filename));
             }
             return true;
         }catch (Exception e){

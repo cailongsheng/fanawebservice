@@ -1,5 +1,6 @@
 package com.fana.controller;
 
+import com.fana.entry.vo.UploadFileVo;
 import com.fana.utils.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -24,8 +25,8 @@ public class FilesController {
 
 
     @PostMapping("upload")
-    private String upload(MultipartFile file) throws IOException {
-        return fileUtils.uploadFile(file,"charity");
+    private String upload(UploadFileVo vo) throws IOException {
+        return fileUtils.uploadFile(vo.getFile(),vo.getPrefix());
 
     }
 
