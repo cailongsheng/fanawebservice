@@ -7,6 +7,7 @@ import com.fana.service.ITbLeaderBoardService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 
@@ -45,10 +46,16 @@ public class TbLeaderBoardController {
         return leaderBoardService.addLeaderBoardList(vo);
     }
 
+    @ApiOperation(" leader board date detail ")
+    @PostMapping("/select")
+    public ResponseResult selectLeaderBoardDetail(@RequestBody LeaderBoardVo vo){
+        return leaderBoardService.selectLeaderBoardDetail(vo);
+    }
+
     @ApiOperation("upload leader board date")
     @PostMapping("/upload")
-    public ResponseResult uploadLeaderBoard(@RequestBody LeaderBoardVo vo){
-        return leaderBoardService.addLeaderBoardList(vo);
+    public ResponseResult uploadLeaderBoard(MultipartFile file){
+        return leaderBoardService.uploadLeaderBoard(file);
     }
 
 }

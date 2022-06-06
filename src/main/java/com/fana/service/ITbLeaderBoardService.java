@@ -4,6 +4,7 @@ import com.fana.config.ResponseResult;
 import com.fana.entry.pojo.TbLeaderBoard;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fana.entry.vo.LeaderBoardVo;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * <p>
@@ -20,4 +21,8 @@ public interface ITbLeaderBoardService extends IService<TbLeaderBoard> {
     ResponseResult updateLeaderBoardList(LeaderBoardVo vo);
 
     ResponseResult addLeaderBoardList(LeaderBoardVo vo);
+
+    ResponseResult uploadLeaderBoard(MultipartFile file);
+
+    ResponseResult selectLeaderBoardDetail(LeaderBoardVo vo);
 }

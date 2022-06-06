@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -14,6 +16,33 @@ import lombok.NoArgsConstructor;
 public class LeaderBoardVo {
     private Long pageNum;
     private Long pageSize;
+    /**
+     * id
+     */
     private int id;
+    /**
+     * 活动标题
+     */
+    private String activityName;
+
+    /**
+     * 活动图片路径
+     */
+    private String activityImageUrl;
+
+    /**
+     * 活动捐款总额度
+     */
+    private BigDecimal donationAmount;
+
+    /**
+     * 活动目标金额
+     */
+    private BigDecimal donateGoal;
+
+    /**
+     * 删除
+     */
+    private Integer isDelete;
 
 }
