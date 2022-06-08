@@ -45,4 +45,9 @@ public class LeaderBoardVo {
      */
     private Integer isDelete;
 
+    /**
+     * 机构id
+     */
+    private Integer charityId;
+
 }

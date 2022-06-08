@@ -55,7 +55,7 @@ public class TbLeaderBoard extends Model {
     /**
      * 活动目标金额
      */
-    @TableField("donation_goal")
+    @TableField("donate_goal")
     private BigDecimal donateGoal;
 
     /**
@@ -63,8 +63,13 @@ public class TbLeaderBoard extends Model {
      */
     @TableField("is_delete")
     private int isDelete;
+    /**
+     * 机构id
+     */
+    @TableField("charity_id")
+    private int charityId;
 
-    @TableField(value = "create_at",fill = FieldFill.INSERT_UPDATE)
+    @TableField(value = "update_at",fill = FieldFill.INSERT_UPDATE)
     @DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss")//序列化
     @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="dd/MM/yyyy")//反序列化
     private LocalDateTime updateAt;

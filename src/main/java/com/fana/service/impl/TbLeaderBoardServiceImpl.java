@@ -58,10 +58,16 @@ public class TbLeaderBoardServiceImpl extends ServiceImpl<TbLeaderBoardMapper, T
     public ResponseResult updateLeaderBoardList(LeaderBoardVo vo) {
         LogUtil.addInfoLog("修改 leader board", "/leader/board/update", JSON.toJSON(vo));
         try {
+            TbLeaderBoard tbLeaderBoard = leaderBoardMapper.selectById(vo.getId());
+            if (ObjectUtil.isNull(tbLeaderBoard)) return new ResponseResult(200,"data is null");
             leaderBoardMapper.updateById(TbLeaderBoard.builder()
+                    .id(tbLeaderBoard.getId())
                     .isDelete(ObjectUtil.isNull(vo.getIsDelete()) ? 0 : vo.getIsDelete())
-                    .activityImageUrl(StrUtil.isBlank(vo.getActivityImageUrl())?"-":fileUtils.getFileName(vo.getActivityImageUrl()))
-                    .activityName(StrUtil.isBlank(vo.getActivityName())?"-":vo.getActivityName())
+                    .activityImageUrl(StrUtil.isBlank(vo.getActivityImageUrl())?tbLeaderBoard.getActivityImageUrl():fileUtils.getFileName(vo.getActivityImageUrl()))
+                    .activityName(StrUtil.isBlank(vo.getActivityName())?tbLeaderBoard.getActivityName():vo.getActivityName())
+                    .donateGoal(ObjectUtil.isEmpty(vo.getDonateGoal())?tbLeaderBoard.getDonateGoal():vo.getDonateGoal())
+                    .donationAmount(ObjectUtil.isEmpty(vo.getDonationAmount())?tbLeaderBoard.getDonationAmount():vo.getDonationAmount())
+                    .charityId(ObjectUtil.isEmpty(vo.getCharityId())?tbLeaderBoard.getCharityId():vo.getCharityId())
                     .build());
         } catch (Exception e) {
             LogUtil.addErrorLog("修改 leader board error", "/leader/board/update", e.getMessage());
@@ -73,11 +79,13 @@ public class TbLeaderBoardServiceImpl extends ServiceImpl<TbLeaderBoardMapper, T
     @Override
     public ResponseResult addLeaderBoardList(LeaderBoardVo vo) {
         LogUtil.addInfoLog("添加leader board", "/leader/board/add", JSON.toJSON(vo));
+        if (ObjectUtil.isNull(vo.getCharityId())) return new ResponseResult(200,"Please bind the charity");
         try {
             leaderBoardMapper.insert(TbLeaderBoard.builder()
                     .activityName(StrUtil.isBlank(vo.getActivityName()) ? "-" : vo.getActivityName())
                     .activityImageUrl(StrUtil.isBlank(vo.getActivityImageUrl()) ? "-" : fileUtils.getFileName(vo.getActivityImageUrl()))
                     .donateGoal(ObjectUtil.isNull(vo.getDonateGoal()) ? null : vo.getDonateGoal())
+                    .charityId(vo.getCharityId())
                     .build());
         } catch (Exception e) {
             LogUtil.addErrorLog("添加leader boarderror", "/leader/board/add", e.getMessage());
