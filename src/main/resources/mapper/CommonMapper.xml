@@ -39,6 +39,5 @@
         <if test=" vo.charityName != null and vo.charityName !=''">
             and ch.`charity` like concat('%',#{vo.charityName},'%')
         </if>
-        limit #{vo.pageNum},#{vo.pageSize}
     </select>
 </mapper>

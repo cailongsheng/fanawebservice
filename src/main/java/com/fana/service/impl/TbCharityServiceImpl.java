@@ -109,7 +109,7 @@ public class TbCharityServiceImpl extends ServiceImpl<TbCharityMapper, TbCharity
         charity.setCreateAt(LocalDateTime.now());
         charity.setUpdateAt(LocalDateTime.now());
         charity.setDescription(vo.getDescription());
-        fileUtils.deleteByFileName(charity.getImageUrl(),"charity");
+//        fileUtils.deleteByFileName(charity.getImageUrl(),"charity");
         charity.setImageUrl(fileUtils.getFileName(vo.getImageUrl()));
         charity.setIsShow(vo.getIsShow());
         charity.setWebsite(vo.getWebsite());
@@ -129,7 +129,7 @@ public class TbCharityServiceImpl extends ServiceImpl<TbCharityMapper, TbCharity
         if(ObjectUtil.isEmpty(charity)){
             throw new CustomException(Status.CHARITY_NOT_EXIXT.code,Status.CHARITY_NOT_EXIXT.message);
         }
-        fileUtils.deleteByFileName(charity.getImageUrl(),"charity");
+//        fileUtils.deleteByFileName(charity.getImageUrl(),"charity");
         charityMapper.deleteById(vo.getId());
         userCharityMapper.delete(new QueryWrapper<TbUserCharity>().lambda().eq(TbUserCharity::getCharityId,charity.getId()));
         return ResponseResult.success();

@@ -34,6 +34,7 @@ public class FileUtils {
             this.put("achievement", "C:\\Users\\27466\\Desktop\\fana\\achievement\\");
             this.put("charity", "C:\\Users\\27466\\Desktop\\fana\\charity\\");
             this.put("user", "C:\\Users\\27466\\Desktop\\fana\\user\\");
+            this.put("leader","C:\\Users\\27466\\Desktop\\fana\\leader\\");
 
         }
     };
@@ -43,6 +44,7 @@ public class FileUtils {
             this.put("achievement", "/app/file/images/achievement/");
             this.put("charity", "/app/file/images/charity/");
             this.put("user", "/app/file/images/user/");
+            this.put("leader","/app/file/images/leader/");
 
         }
     };
