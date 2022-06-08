@@ -57,4 +57,4 @@ logging:
 fana:
   ip: http://localhost:8081/
   banner:
-    imgPath: C:\Users\MI\Desktop\
+    imgPath: C:\Users\MI\Desktop
