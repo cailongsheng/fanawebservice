@@ -9,10 +9,12 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fana.config.ResponseResult;
 import com.fana.config.Status;
+import com.fana.entry.pojo.TbCharity;
 import com.fana.entry.pojo.TbLeaderBoard;
 import com.fana.entry.vo.IPageVo;
 import com.fana.entry.vo.LeaderBoardVo;
 import com.fana.exception.CustomException;
+import com.fana.mapper.TbCharityMapper;
 import com.fana.mapper.TbLeaderBoardMapper;
 import com.fana.service.ITbLeaderBoardService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -38,6 +40,8 @@ public class TbLeaderBoardServiceImpl extends ServiceImpl<TbLeaderBoardMapper, T
     TbLeaderBoardMapper leaderBoardMapper;
     @Resource
     FileUtils fileUtils;
+    @Resource
+    TbCharityMapper charityMapper;
 
     @Override
     public ResponseResult getLeaderBoardList(LeaderBoardVo vo) {
@@ -45,6 +49,11 @@ public class TbLeaderBoardServiceImpl extends ServiceImpl<TbLeaderBoardMapper, T
         IPage<TbLeaderBoard> boardIPage = leaderBoardMapper.selectPage(new Page<>(vo.getPageNum(), vo.getPageSize()),
                 new QueryWrapper<TbLeaderBoard>().lambda().eq(TbLeaderBoard::getIsDelete, 0)
         );
+        boardIPage.getRecords().forEach(leader -> {
+            TbCharity tbCharity = charityMapper.selectById(leader.getId());
+            if (ObjectUtil.isNotNull(tbCharity))
+                leader.setCharityName(tbCharity.getCharity());
+        });
         IPageVo iPageVo = new IPageVo();
         iPageVo.setPageNum(boardIPage.getCurrent());
         iPageVo.setPageSize(boardIPage.getSize());
@@ -59,15 +68,15 @@ public class TbLeaderBoardServiceImpl extends ServiceImpl<TbLeaderBoardMapper, T
         LogUtil.addInfoLog("修改 leader board", "/leader/board/update", JSON.toJSON(vo));
         try {
             TbLeaderBoard tbLeaderBoard = leaderBoardMapper.selectById(vo.getId());
-            if (ObjectUtil.isNull(tbLeaderBoard)) return new ResponseResult(200,"data is null");
+            if (ObjectUtil.isNull(tbLeaderBoard)) return new ResponseResult(200, "data is null");
             leaderBoardMapper.updateById(TbLeaderBoard.builder()
                     .id(tbLeaderBoard.getId())
                     .isDelete(ObjectUtil.isNull(vo.getIsDelete()) ? 0 : vo.getIsDelete())
-                    .activityImageUrl(StrUtil.isBlank(vo.getActivityImageUrl())?tbLeaderBoard.getActivityImageUrl():fileUtils.getFileName(vo.getActivityImageUrl()))
-                    .activityName(StrUtil.isBlank(vo.getActivityName())?tbLeaderBoard.getActivityName():vo.getActivityName())
-                    .donateGoal(ObjectUtil.isEmpty(vo.getDonateGoal())?tbLeaderBoard.getDonateGoal():vo.getDonateGoal())
-                    .donationAmount(ObjectUtil.isEmpty(vo.getDonationAmount())?tbLeaderBoard.getDonationAmount():vo.getDonationAmount())
-                    .charityId(ObjectUtil.isEmpty(vo.getCharityId())?tbLeaderBoard.getCharityId():vo.getCharityId())
+                    .activityImageUrl(StrUtil.isBlank(vo.getActivityImageUrl()) ? tbLeaderBoard.getActivityImageUrl() : fileUtils.getFileName(vo.getActivityImageUrl()))
+                    .activityName(StrUtil.isBlank(vo.getActivityName()) ? tbLeaderBoard.getActivityName() : vo.getActivityName())
+                    .donateGoal(ObjectUtil.isEmpty(vo.getDonateGoal()) ? tbLeaderBoard.getDonateGoal() : vo.getDonateGoal())
+                    .donationAmount(ObjectUtil.isEmpty(vo.getDonationAmount()) ? tbLeaderBoard.getDonationAmount() : vo.getDonationAmount())
+                    .charityId(ObjectUtil.isEmpty(vo.getCharityId()) ? tbLeaderBoard.getCharityId() : vo.getCharityId())
                     .build());
         } catch (Exception e) {
             LogUtil.addErrorLog("修改 leader board error", "/leader/board/update", e.getMessage());
@@ -79,7 +88,7 @@ public class TbLeaderBoardServiceImpl extends ServiceImpl<TbLeaderBoardMapper, T
     @Override
     public ResponseResult addLeaderBoardList(LeaderBoardVo vo) {
         LogUtil.addInfoLog("添加leader board", "/leader/board/add", JSON.toJSON(vo));
-        if (ObjectUtil.isNull(vo.getCharityId())) return new ResponseResult(200,"Please bind the charity");
+        if (ObjectUtil.isNull(vo.getCharityId())) return new ResponseResult(200, "Please bind the charity");
         try {
             leaderBoardMapper.insert(TbLeaderBoard.builder()
                     .activityName(StrUtil.isBlank(vo.getActivityName()) ? "-" : vo.getActivityName())
@@ -117,13 +126,15 @@ public class TbLeaderBoardServiceImpl extends ServiceImpl<TbLeaderBoardMapper, T
         LogUtil.addInfoLog("获取 leader board 详情", "/leader/board/select", null);
         try {
             TbLeaderBoard tbLeaderBoard = leaderBoardMapper.selectById(vo.getId());
-            if (ObjectUtil.isNotNull(tbLeaderBoard)) return ResponseResult.success(JSON.toJSON(tbLeaderBoard));
+            if (ObjectUtil.isNull(tbLeaderBoard)) return ResponseResult.success();
+            TbCharity tbCharity = charityMapper.selectById(tbLeaderBoard.getCharityId());
+            if (ObjectUtil.isNotNull(tbCharity))
+                tbLeaderBoard.setCharityName(tbCharity.getCharity());
+            return ResponseResult.success(JSON.toJSON(tbLeaderBoard));
         } catch (Exception e) {
             LogUtil.addErrorLog("获取leader board error", "/leader/board/select", e.getMessage());
             throw new CustomException(201, e.getMessage());
         }
-        return ResponseResult.success();
-
     }
 
 }

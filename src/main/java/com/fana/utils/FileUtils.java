@@ -36,6 +36,7 @@ public class FileUtils {
             this.put("user", "C:\\Users\\27466\\Desktop\\fana\\user\\");
             this.put("leader","C:\\Users\\27466\\Desktop\\fana\\leader\\");
 
+
         }
     };
     private HashMap<String,String> pathTest = new HashMap<String, String>(){
@@ -45,6 +46,7 @@ public class FileUtils {
             this.put("charity", "/app/file/images/charity/");
             this.put("user", "/app/file/images/user/");
             this.put("leader","/app/file/images/leader/");
+
 
         }
     };
