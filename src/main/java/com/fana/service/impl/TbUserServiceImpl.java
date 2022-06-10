@@ -46,11 +46,10 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
     public ResponseResult getList(AppUserVo vo) {
         LogUtil.addInfoLog("(app)获取用户列表", "/user/app/list", JSON.toJSON(vo));
         QueryWrapper<TbUser> queryWrapper = new QueryWrapper<>();
-        QueryWrapper<TbUser> query = new QueryWrapper<>();
         if (StrUtil.isNotBlank(vo.getSearch()))
             queryWrapper.like("email", vo.getSearch()).or().like("last_name", vo.getSearch());
         IPage<TbUser> page = new Page<>(vo.getPageNum(), vo.getPageSize());
-        IPage<TbUser> iPage = userMapper.selectPage(page, query);
+        IPage<TbUser> iPage = userMapper.selectPage(page, queryWrapper);
         iPage.getRecords().stream().forEach(a->{
             if(StrUtil.isNotBlank(a.getAvator())){
                 a.setAvator(fanaIp+"user/"+a.getAvator());
