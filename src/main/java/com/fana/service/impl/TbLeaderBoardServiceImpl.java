@@ -20,6 +20,7 @@ import com.fana.service.ITbLeaderBoardService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fana.utils.FileUtils;
 import com.fana.utils.LogUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,9 +43,12 @@ public class TbLeaderBoardServiceImpl extends ServiceImpl<TbLeaderBoardMapper, T
     FileUtils fileUtils;
     @Resource
     TbCharityMapper charityMapper;
+    @Value("${fana.ip}")
+    private String ip;
 
     @Override
     public ResponseResult getLeaderBoardList(LeaderBoardVo vo) {
+        String path = ip+"leader/";
         LogUtil.addInfoLog("get leader board list", "/leader/board/list", vo.toString());
         IPage<TbLeaderBoard> boardIPage = leaderBoardMapper.selectPage(new Page<>(vo.getPageNum(), vo.getPageSize()),
                 new QueryWrapper<TbLeaderBoard>().lambda().eq(TbLeaderBoard::getIsDelete, 0)
@@ -53,6 +57,7 @@ public class TbLeaderBoardServiceImpl extends ServiceImpl<TbLeaderBoardMapper, T
             TbCharity tbCharity = charityMapper.selectById(leader.getId());
             if (ObjectUtil.isNotNull(tbCharity))
                 leader.setCharityName(tbCharity.getCharity());
+            leader.setActivityImageUrl(path+leader.getActivityImageUrl());
         });
         IPageVo iPageVo = new IPageVo();
         iPageVo.setPageNum(boardIPage.getCurrent());
