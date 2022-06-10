@@ -21,6 +21,9 @@ public enum Status {
     IMAGE_UPLOAD_FAILED(1009,"image upload false"),
     FILE_DELETE_ERROR(1010,"File deletion failed"),
     CHARITY_NOT_EXIXT(1011,"Data does not exist"),
+    ACHIEVEMENT_TEMPLATE_ERROR(1012,"The template already exists"),
+    ACHIEVEMENT_TEMPLATE_NOT_EXIST(1013,"Template does not exist"),
+
     //token校验
     TOKEN_ERROR(2001,"token error"),
     ;
