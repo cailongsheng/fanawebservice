@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.generator.config.IFileCreate;
 import com.fana.config.ResponseResult;
 import com.fana.config.Status;
 import com.fana.entry.pojo.TbCharity;
@@ -48,17 +49,20 @@ public class TbLeaderBoardServiceImpl extends ServiceImpl<TbLeaderBoardMapper, T
 
     @Override
     public ResponseResult getLeaderBoardList(LeaderBoardVo vo) {
-        String path = ip+"leader/";
+        String path = ip + "leader/";
         LogUtil.addInfoLog("get leader board list", "/leader/board/list", vo.toString());
-        IPage<TbLeaderBoard> boardIPage = leaderBoardMapper.selectPage(new Page<>(vo.getPageNum(), vo.getPageSize()),
-                new QueryWrapper<TbLeaderBoard>().lambda().eq(TbLeaderBoard::getIsDelete, 0)
-        );
+        QueryWrapper<TbLeaderBoard> queryWrapper = new QueryWrapper<>();
+        if (ObjectUtil.isNotEmpty(vo.getIsDelete()))
+            queryWrapper.eq("is_delete", vo.getIsDelete());
+        if (ObjectUtil.isNotEmpty(vo.getCategory()))
+            queryWrapper.eq("category", vo.getCategory());
+        IPage<TbLeaderBoard> boardIPage = leaderBoardMapper.selectPage(new Page<>(vo.getPageNum(), vo.getPageSize()), queryWrapper);
         boardIPage.getRecords().forEach(leader -> {
             TbCharity tbCharity = charityMapper.selectById(leader.getId());
             if (ObjectUtil.isNotNull(tbCharity))
                 leader.setCharityName(tbCharity.getCharity());
-            leader.setActivityImageUrl(path+leader.getActivityImageUrl());
-            leader.setType(vo.getType());
+            leader.setActivityImageUrl(path + leader.getActivityImageUrl());
+            leader.setCategory(vo.getCategory());
         });
         IPageVo iPageVo = new IPageVo();
         iPageVo.setPageNum(boardIPage.getCurrent());
@@ -83,6 +87,7 @@ public class TbLeaderBoardServiceImpl extends ServiceImpl<TbLeaderBoardMapper, T
                     .donateGoal(ObjectUtil.isEmpty(vo.getDonateGoal()) ? tbLeaderBoard.getDonateGoal() : vo.getDonateGoal())
                     .donationAmount(ObjectUtil.isEmpty(vo.getDonationAmount()) ? tbLeaderBoard.getDonationAmount() : vo.getDonationAmount())
                     .charityId(ObjectUtil.isEmpty(vo.getCharityId()) ? tbLeaderBoard.getCharityId() : vo.getCharityId())
+                    .category(ObjectUtil.isNull(vo.getCategory()) ? tbLeaderBoard.getCategory() : vo.getCategory())
                     .build());
         } catch (Exception e) {
             LogUtil.addErrorLog("修改 leader board error", "/leader/board/update", e.getMessage());
@@ -101,6 +106,7 @@ public class TbLeaderBoardServiceImpl extends ServiceImpl<TbLeaderBoardMapper, T
                     .activityImageUrl(StrUtil.isBlank(vo.getActivityImageUrl()) ? "-" : fileUtils.getFileName(vo.getActivityImageUrl()))
                     .donateGoal(ObjectUtil.isNull(vo.getDonateGoal()) ? null : vo.getDonateGoal())
                     .charityId(vo.getCharityId())
+                    .category(ObjectUtil.isNull(vo.getCategory()) ? -1 : vo.getCategory())
                     .build());
         } catch (Exception e) {
             LogUtil.addErrorLog("添加leader boarderror", "/leader/board/add", e.getMessage());

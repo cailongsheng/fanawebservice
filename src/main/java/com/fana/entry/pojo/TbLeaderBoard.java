@@ -84,8 +84,13 @@ public class TbLeaderBoard extends Model {
     @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="dd/MM/yyyy")//反序列化
     private LocalDateTime createAt;
 
-    @TableField(exist = false)
-    private Integer type;
+    /**
+     * 分类
+     *   0: 'Leading Cause',
+     *   1: 'Friends’ Projects'
+     */
+    @TableField(value = "category")
+    private Integer category;
 
 
 
