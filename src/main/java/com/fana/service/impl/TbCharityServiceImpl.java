@@ -76,7 +76,7 @@ public class TbCharityServiceImpl extends ServiceImpl<TbCharityMapper, TbCharity
                 a.setImageUrl(fanaIp+"charity/"+a.getImageUrl());
             }
             try {
-                a.setDescription( new String(a.getDescription().getBytes(),"utf-8") );
+                a.setDescription( new String(a.getDescription().getBytes("ISO-8859-1"),"utf-8") );
             } catch (UnsupportedEncodingException e) {
                log.error("字符串编码解析错误;{}",e);
             }
