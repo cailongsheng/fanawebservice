@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -73,6 +74,11 @@ public class TbCharityServiceImpl extends ServiceImpl<TbCharityMapper, TbCharity
         list.stream().forEach(a->{
             if(StrUtil.isNotBlank(a.getImageUrl())){
                 a.setImageUrl(fanaIp+"charity/"+a.getImageUrl());
+            }
+            try {
+                a.setDescription( new String(a.getDescription().getBytes(),"utf-8") );
+            } catch (UnsupportedEncodingException e) {
+               log.error("字符串编码解析错误;{}",e);
             }
         });
         return ResponseResult.success(iPageVo);
