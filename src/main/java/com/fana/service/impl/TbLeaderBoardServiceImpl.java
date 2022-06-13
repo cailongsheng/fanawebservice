@@ -58,6 +58,7 @@ public class TbLeaderBoardServiceImpl extends ServiceImpl<TbLeaderBoardMapper, T
             if (ObjectUtil.isNotNull(tbCharity))
                 leader.setCharityName(tbCharity.getCharity());
             leader.setActivityImageUrl(path+leader.getActivityImageUrl());
+            leader.setType(vo.getType());
         });
         IPageVo iPageVo = new IPageVo();
         iPageVo.setPageNum(boardIPage.getCurrent());

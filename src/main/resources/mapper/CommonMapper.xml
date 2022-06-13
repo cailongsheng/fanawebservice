@@ -23,6 +23,9 @@
         <if test=" vo.charityName != null and vo.charityName !=''">
             and ch.`charity` like concat('%',#{vo.charityName},'%')
         </if>
+        <if test=" vo.isShow != null and vo.isShow !=''">
+            and ch.`is_show` = vo.isShow
+        </if>
         limit #{vo.pageNum},#{vo.pageSize}
     </select>
     <select id="getCharityListCount" parameterType="com.fana.entry.vo.CharityVo" resultType="int">

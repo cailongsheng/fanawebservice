@@ -50,4 +50,9 @@ public class LeaderBoardVo {
      */
     private Integer charityId;
 
+    /**
+     *  type  0: leader cause 1: friends project
+     */
+    private Integer type;
+
 }

@@ -47,7 +47,8 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
         LogUtil.addInfoLog("(app)获取用户列表", "/user/app/list", JSON.toJSON(vo));
         QueryWrapper<TbUser> queryWrapper = new QueryWrapper<>();
         if (StrUtil.isNotBlank(vo.getSearch()))
-            queryWrapper.like("email", vo.getSearch()).or().like("last_name", vo.getSearch());
+            queryWrapper.like("email", vo.getSearch()).or().like("last_name", vo.getSearch())
+                    .or().like("first_name",vo.getSearch());
         IPage<TbUser> page = new Page<>(vo.getPageNum(), vo.getPageSize());
         IPage<TbUser> iPage = userMapper.selectPage(page, queryWrapper);
         iPage.getRecords().stream().forEach(a->{

@@ -26,6 +26,7 @@ public class CharityVo implements Serializable {
     private String charityName;
     private Integer categoryId;
     private String fileUrl;
+    private String isShow;
 
 
 }
