@@ -24,7 +24,7 @@
             and ch.`charity` like concat('%',#{vo.charityName},'%')
         </if>
         <if test=" vo.isShow != null and vo.isShow !=''">
-            and ch.`is_show` = vo.isShow
+            and ch.`is_show` = #{vo.isShow}
         </if>
         limit #{vo.pageNum},#{vo.pageSize}
     </select>
@@ -41,6 +41,9 @@
         </if>
         <if test=" vo.charityName != null and vo.charityName !=''">
             and ch.`charity` like concat('%',#{vo.charityName},'%')
+        </if>
+        <if test=" vo.isShow != null and vo.isShow !=''">
+            and ch.`is_show` = #{vo.isShow}
         </if>
     </select>
 </mapper>
