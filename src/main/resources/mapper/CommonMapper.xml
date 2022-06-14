@@ -26,6 +26,12 @@
         <if test=" vo.isShow != null and vo.isShow !=''">
             and ch.`is_show` = #{vo.isShow}
         </if>
+        <if test="vo.sortId != null and vo.sortId == 0">
+            order by ch.`charity` desc
+        </if>
+        <if test="vo.sortId != null and vo.sortId == 1">
+            order by ch.`charity` asc
+        </if>
         limit #{vo.pageNum},#{vo.pageSize}
     </select>
     <select id="getCharityListCount" parameterType="com.fana.entry.vo.CharityVo" resultType="int">

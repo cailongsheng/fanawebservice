@@ -28,5 +28,8 @@ public class CharityVo implements Serializable {
     private String fileUrl;
     private String isShow;
 
+    @ApiModelProperty(value = "按机构名字排序1,a-z 0,z-a")
+    private Integer sortId;
+
 
 }
