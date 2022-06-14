@@ -66,7 +66,7 @@ public class TbWebUserController {
      * 修改用户
      */
     @PostMapping("/update")
-    @ApiOperation(value = "用户列表")
+    @ApiOperation(value = "修改用户")
     public ResponseResult updateUser(@RequestBody WebUserVo vo, @RequestHeader String Authorization){
         return webUserService.updateUser(vo,Authorization);
     }
@@ -84,7 +84,7 @@ public class TbWebUserController {
      * 删除用户
      */
     @PostMapping("/delete")
-    @ApiOperation(value = "用户详情")
+    @ApiOperation(value = "删除用户")
     public ResponseResult deleteUser(@RequestBody WebUserVo vo, @RequestHeader String Authorization){
         return webUserService.deleteUser(vo,Authorization);
     }
@@ -93,7 +93,7 @@ public class TbWebUserController {
      * 添加用户
      */
     @PostMapping("/add")
-    @ApiOperation(value = "用户详情")
+    @ApiOperation(value = "添加用户")
     public ResponseResult addUser(@RequestBody WebUserVo vo){
         return webUserService.addUser(vo);
     }

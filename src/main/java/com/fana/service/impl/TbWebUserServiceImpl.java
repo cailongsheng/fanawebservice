@@ -60,6 +60,10 @@ public class TbWebUserServiceImpl extends ServiceImpl<TbWebUserMapper, TbWebUser
             log.info("用户不存在...");
             throw new CustomException(Status.USER_VOID.code, Status.USER_VOID.message);
         }
+        if(tbWebUser.getIsDelete() == 1){
+            log.info("此用户已被冻结...");
+            throw new CustomException(Status.USER_FROZEN.code, Status.USER_FROZEN.message);
+        }
         if (!MD5Util.inputPassToDbPass(vo.getPassword()).equals(tbWebUser.getPassword())) {
             log.info("密码错误...");
             throw new CustomException(Status.PASSWORD_ERROR.code, Status.PASSWORD_ERROR.message);
@@ -78,7 +82,6 @@ public class TbWebUserServiceImpl extends ServiceImpl<TbWebUserMapper, TbWebUser
     public ResponseResult getList(WebUserVo vo) {
         LogUtil.addInfoLog("获取用户列表", "/user/list", JSON.toJSON(vo));
         QueryWrapper<TbWebUser> queryWrapper = new QueryWrapper<>();
-        QueryWrapper<TbUser> query = new QueryWrapper<>();
 
         if (StrUtil.isNotBlank(vo.getSearch()))
             queryWrapper.like("username", vo.getSearch()).or().like("role_id", vo.getSearch());
@@ -93,10 +96,10 @@ public class TbWebUserServiceImpl extends ServiceImpl<TbWebUserMapper, TbWebUser
     public ResponseResult updateUser(WebUserVo vo,String Authorization) {
         LogUtil.addInfoLog("修改用户信息", "/user/update", JSON.toJSON(vo));
         TbWebUser webUser = TbWebUser.builder().build();
-        TbWebUser tbWebUser = webUserMapper.selectById(tokenManager.getUserId(Authorization));
+        TbWebUser tbWebUser = webUserMapper.selectById(vo.getId());
         if (ObjectUtil.isNull(tbWebUser)) throw new CustomException(201, "user don`t exist");
         webUser = TbWebUser.builder()
-                .id(tokenManager.getUserId(Authorization))
+                .id(tbWebUser.getId())
                 .username(vo.getUsername())
                 .password(
                         StrUtil.isNotBlank(vo.getPassword()) ? !MD5Util.inputPassToDbPass(vo.getPassword()).equals(tbWebUser.getPassword()) ?
@@ -121,7 +124,7 @@ public class TbWebUserServiceImpl extends ServiceImpl<TbWebUserMapper, TbWebUser
     public ResponseResult selectUser(WebUserVo vo,String Authorization) {
         LogUtil.addInfoLog("获取用户信息详情", "/user/select", JSON.toJSON(vo));
         if (vo.getPlatform().equals(0)) {//web
-            TbWebUser tbWebUser = webUserMapper.selectById(tokenManager.getUserId(Authorization));
+            TbWebUser tbWebUser = webUserMapper.selectById(vo.getId());
             return ResponseResult.success(tbWebUser);
         }
         return ResponseResult.success();
@@ -131,12 +134,17 @@ public class TbWebUserServiceImpl extends ServiceImpl<TbWebUserMapper, TbWebUser
     @Transactional(rollbackFor = Exception.class)
     public ResponseResult deleteUser(WebUserVo vo,String Authorization) {
         LogUtil.addInfoLog("delete用户信息详情", "/user/delete", JSON.toJSON(vo));
-        UpdateWrapper queryWrapper = new UpdateWrapper();
+        TbWebUser tbWebUser = webUserMapper.selectById(vo.getId());
+        if (ObjectUtil.isNull(tbWebUser)) throw new CustomException(201, "user don`t exist");
+//        UpdateWrapper queryWrapper = new UpdateWrapper();
         try {
-            queryWrapper.eq("id", tokenManager.getUserId(Authorization));
-            queryWrapper.set("id", tokenManager.getUserId(Authorization));
+
+//            queryWrapper.eq("id", tokenManager.getUserId(Authorization));
+//            queryWrapper.set("id", tokenManager.getUserId(Authorization));
 //                webUserMapper.updateById(TbWebUser.builder().id(vo.getId()).isDelete(1).build());
-            webUserMapper.update(TbWebUser.builder().id(vo.getId()).isDelete(1).build(), queryWrapper);
+//            webUserMapper.update(TbWebUser.builder().id(vo.getId()).isDelete(1).build(), queryWrapper);
+            tbWebUser.setIsDelete(1);
+            webUserMapper.updateById(tbWebUser);
         } catch (Exception e) {
             LogUtil.addErrorLog("delete用户信息详情error", "/user/delete", e.getMessage());
             throw new CustomException(201, e.getMessage());

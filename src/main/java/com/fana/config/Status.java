@@ -23,6 +23,7 @@ public enum Status {
     CHARITY_NOT_EXIXT(1011,"Data does not exist"),
     ACHIEVEMENT_TEMPLATE_ERROR(1012,"The template already exists"),
     ACHIEVEMENT_TEMPLATE_NOT_EXIST(1013,"Template does not exist"),
+    USER_FROZEN(1014,"The user has been frozen"),
 
     //token校验
     TOKEN_ERROR(2001,"token error"),

@@ -65,7 +65,7 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
     public ResponseResult updateUser(AppUserVo vo, String Authorization) {
         LogUtil.addInfoLog("(app)修改用户信息", "/user/app/update", JSON.toJSON(vo));
         TbUser user = TbUser.builder().build();
-        TbUser tbUser = userMapper.selectById(tokenManager.getUserId(Authorization));
+        TbUser tbUser = userMapper.selectById(vo.getId());
         if (ObjectUtil.isNull(tbUser)) throw new CustomException(201, "The user does not exist.");
         user = user.builder()
                 .id(vo.getId())
@@ -94,7 +94,7 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
     @Transactional(rollbackFor = Exception.class)
     public ResponseResult selectUser(AppUserVo vo, String Authorization) {
         LogUtil.addInfoLog("(app)获取用户信息详情", "/user/app/select", JSON.toJSON(vo));
-        TbUser tbUser = userMapper.selectById(tokenManager.getUserId(Authorization));
+        TbUser tbUser = userMapper.selectById(vo.getId());
         if(StrUtil.isNotBlank(tbUser.getAvator())){
             tbUser.setAvator(fanaIp+"user/"+tbUser.getAvator());
         }
