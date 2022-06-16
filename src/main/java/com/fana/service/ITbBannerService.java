@@ -4,6 +4,7 @@ import com.fana.config.ResponseResult;
 import com.fana.entry.pojo.TbBanner;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fana.entry.vo.BannerVo;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,11 +18,13 @@ import java.util.List;
  */
 public interface ITbBannerService extends IService<TbBanner> {
 
-    ResponseResult uploadBanner(List<BannerVo> banners);
+    ResponseResult saveBanner(List<BannerVo> banners);
 
     ResponseResult getBannerList();
 
     ResponseResult updateBanner(BannerVo vo);
 
     ResponseResult deleteBanner(BannerVo vo);
+
+    ResponseResult uploadBanner(MultipartFile file);
 }

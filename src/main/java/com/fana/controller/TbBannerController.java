@@ -7,6 +7,7 @@ import com.fana.service.ITbBannerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -28,8 +29,8 @@ public class TbBannerController {
 
     @PostMapping("/save")
     @ApiOperation(value = "web admin add banner")
-    public ResponseResult uploadBanner( List<BannerVo> banners){
-       return bannerService.uploadBanner(banners);
+    public ResponseResult saveBanner(@RequestBody List<BannerVo> banners){
+       return bannerService.saveBanner(banners);
     }
 
     @PostMapping("/list")
@@ -46,6 +47,12 @@ public class TbBannerController {
     @ApiOperation(value = "web admin delete banner ")
     public ResponseResult deleteBanner(@RequestBody BannerVo vo){
         return bannerService.deleteBanner(vo);
+    }
+
+    @PostMapping("/upload")
+    @ApiOperation(value = "web admin upload banner ")
+    public ResponseResult uploadBanner(MultipartFile file){
+        return bannerService.uploadBanner(file);
     }
 
 }
