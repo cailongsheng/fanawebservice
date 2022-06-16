@@ -1,5 +1,6 @@
 package com.fana.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fana.config.ResponseResult;
@@ -20,7 +21,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author astupidcoder
@@ -33,30 +34,61 @@ public class TbBannerServiceImpl extends ServiceImpl<TbBannerMapper, TbBanner> i
     @Resource
     TbBannerMapper bannerMapper;
     @Value("${fana.ip}")
-    private String fanaIp;
+    private String ip;
+
     @Override
     public ResponseResult uploadBanner(List<BannerVo> banners) {
-        banners.forEach(img->{
+        banners.forEach(img -> {
             try {
                 //上传
-                String uploadPath = fileUtils.uploadFile(img.getFile(),"banner");
-                bannerMapper.insert(TbBanner.builder().imageName(img.getImageName()).imagePath(fileUtils.getFileName(uploadPath)).build());
+                String uploadPath = fileUtils.uploadFile(img.getFile(), "banner");
+                bannerMapper.insert(TbBanner.builder().target(img.getTarget()).imageName(img.getImageName()).imagePath(fileUtils.getFileName(uploadPath)).build());
             } catch (IOException e) {
-                LogUtil.addErrorLog("上传图片文件异常", "upload/insert", "ip", e.getMessage().substring(0, 200));
-                throw  new CustomException(201, "File upload failed.");
+                LogUtil.addErrorLog("上传图片文件异常", "/banner/upload", ip, e.getMessage().substring(0, 200));
+                throw new CustomException(201, "File upload failed.");
             }
 
         });
-        return new ResponseResult(200,"success");
+        return new ResponseResult(200, "success");
     }
 
     @Override
-    public ResponseResult downLoadBanner() {
-        List<TbBanner> tbBanners = bannerMapper.selectList(new QueryWrapper<>());
-        tbBanners.stream().forEach(a->{
-            if(StrUtil.isNotBlank(a.getImagePath())) {
-                a.setImagePath(fanaIp + "banner/" + a.getImagePath());
-            }
-        });
-        return ResponseResult.success(tbBanners);    }
+    public ResponseResult getBannerList() {
+        String path = ip + "banner/";
+        List<TbBanner> tbBannerList = bannerMapper.selectList(new QueryWrapper<>());
+        if (!tbBannerList.isEmpty())
+            tbBannerList.forEach(banner -> {
+                banner.setImagePath(path + banner.getImagePath());
+            });
+        return ResponseResult.success(tbBannerList);
+    }
+
+    @Override
+    public ResponseResult updateBanner(BannerVo vo) {
+        String uploadPath = null;
+        try {
+            boolean existFile = fileUtils.isExistFile(fileUtils.getFileName(vo.getImagePath()), "banner");
+            if (!existFile && ObjectUtil.isNotEmpty(vo.getFile()))
+                uploadPath = fileUtils.uploadFile(vo.getFile(), "banner");
+            else
+                uploadPath = vo.getImagePath();
+        } catch (IOException e) {
+            LogUtil.addErrorLog("上传图片文件异常", "/banner/update", ip, e.getMessage().substring(0, 200));
+            throw new CustomException(201, "File upload failed.");
+        }
+
+        try {
+            bannerMapper.updateById(TbBanner.builder().id(vo.getId()).imageName(vo.getImageName()).imagePath(fileUtils.getFileName(uploadPath)).target(vo.getTarget()).build());
+        } catch (Exception e) {
+            LogUtil.addErrorLog("保存banner异常", "/banner/update/id", ip, e.getMessage().substring(0, 200));
+            throw new CustomException(201, "banner update failed.");
+        }
+        return ResponseResult.success();
+    }
+
+    @Override
+    public ResponseResult deleteBanner(BannerVo vo) {
+        return null;
+    }
+
 }

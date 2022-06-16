@@ -32,18 +32,24 @@ public class TbBanner extends Model {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
-
+    @TableField("image_name")
     private String imageName;
-
+    @TableField("image_path")
     private String imagePath;
     @TableField(value = "create_at", fill = FieldFill.INSERT)
     @DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss")//序列化
     @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="dd/MM/yyyy")//反序列化
     private LocalDateTime createAt;
+
+
     @TableField(value = "update_at", fill = FieldFill.INSERT_UPDATE)
     @DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss")//序列化
     @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="dd/MM/yyyy")//反序列化
     private LocalDateTime updateAt;
+
+
+    @TableField("target")
+    private String target;
 
 
 }
