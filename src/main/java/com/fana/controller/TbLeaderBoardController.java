@@ -20,6 +20,7 @@ import javax.annotation.Resource;
  * @since 2022-06-02
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/leader/board")
 @Api("leader board 模块")
 public class TbLeaderBoardController {

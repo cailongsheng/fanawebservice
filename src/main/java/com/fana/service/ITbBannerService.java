@@ -20,7 +20,7 @@ public interface ITbBannerService extends IService<TbBanner> {
 
     ResponseResult saveBanner(List<BannerVo> banners);
 
-    ResponseResult getBannerList();
+    ResponseResult getBannerList(BannerVo vo);
 
     ResponseResult updateBanner(BannerVo vo);
 

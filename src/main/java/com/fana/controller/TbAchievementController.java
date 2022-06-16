@@ -1,6 +1,7 @@
 package com.fana.controller;
 
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author astupidcoder
  * @since 2022-06-08
  */
+@CrossOrigin
 @RestController
 @RequestMapping("/tb-achievement")
 public class TbAchievementController {

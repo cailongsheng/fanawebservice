@@ -7,7 +7,9 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.fana.config.ResponseResult;
 import com.fana.config.Status;
 import com.fana.entry.pojo.TbBanner;
+import com.fana.entry.vo.ApiBannerAndCharityVo;
 import com.fana.entry.vo.BannerVo;
+import com.fana.entry.vo.IPageVo;
 import com.fana.exception.CustomException;
 import com.fana.mapper.TbBannerMapper;
 import com.fana.service.ITbBannerService;
@@ -46,7 +48,9 @@ public class TbBannerServiceImpl extends ServiceImpl<TbBannerMapper, TbBanner> i
                 bannerMapper.insert(TbBanner.builder()
                         .target(img.getTarget())
                         .imageName(img.getImageName())
-                        .imagePath(fileUtils.getFileName(img.getImagePath())).build());
+                        .imagePath(fileUtils.getFileName(img.getImagePath()))
+                        .charityId(img.getCharityId())
+                        .build());
             } catch (Exception e) {
                 LogUtil.addErrorLog("创建banner异常", "/banner/save", ip, e.getMessage().substring(0, 200));
                 throw new CustomException(201, "File save failed.");
@@ -57,14 +61,22 @@ public class TbBannerServiceImpl extends ServiceImpl<TbBannerMapper, TbBanner> i
     }
 
     @Override
-    public ResponseResult getBannerList() {
-        String path = ip + "banner/";
-        List<TbBanner> tbBannerList = bannerMapper.selectList(new QueryWrapper<>());
-        if (!tbBannerList.isEmpty())
-            tbBannerList.forEach(banner -> {
-                banner.setImagePath(path + banner.getImagePath());
-            });
-        return ResponseResult.success(tbBannerList);
+    public ResponseResult getBannerList(BannerVo vo) {
+        String banners = ip + "banner/";
+        String charity = ip + "charity/";
+        long pageNum = vo.getPageNum() == 1l ? 0 : (vo.getPageNum() - 1) * vo.getPageSize();
+        List<ApiBannerAndCharityVo> bannerAndCharty = bannerMapper.getBannerAndCharity(vo,pageNum,vo.getPageSize());
+        bannerAndCharty.forEach(banner->{
+            banner.setImagePath(banners+banner.getImagePath());
+            banner.setImageUrl(charity+banner.getImageUrl());
+        });
+        IPageVo iPageVo = IPageVo.builder()
+                .total(bannerMapper.selectCount(new QueryWrapper<>()))
+                .pageSize(vo.getPageSize())
+                .pageNum(vo.getPageNum())
+                .list(bannerAndCharty)
+                .build();
+        return ResponseResult.success(iPageVo);
     }
 
     @Override
@@ -92,7 +104,9 @@ public class TbBannerServiceImpl extends ServiceImpl<TbBannerMapper, TbBanner> i
 
     @Override
     public ResponseResult deleteBanner(BannerVo vo) {
-        return null;
+        int byId = bannerMapper.deleteById(vo.getId());
+        if (byId!=0) return ResponseResult.success();
+        return ResponseResult.error(byId);
     }
 
     @Override

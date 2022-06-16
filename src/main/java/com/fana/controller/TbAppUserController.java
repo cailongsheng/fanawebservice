@@ -18,6 +18,7 @@ import javax.annotation.Resource;
 
 @RestController
 @RequestMapping("/user/app")
+@CrossOrigin
 @Api(value = "app用户管理模块弃用")
 public class TbAppUserController {
     @Resource

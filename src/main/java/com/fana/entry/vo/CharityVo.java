@@ -29,4 +29,32 @@ public class CharityVo implements Serializable {
     private String isShow;
 
 
+    /**
+     * 类别
+     */
+    private String classs;
+
+    /**
+     * 机构信息
+     */
+    private String charity;
+
+    /**
+     * 机构平台连接
+     */
+    private String website;
+
+    /**
+     * 机构描述
+     */
+    private String description;
+
+
+    /**
+     * 机构图片
+     */
+    private String imageUrl;
+
+
+
 }

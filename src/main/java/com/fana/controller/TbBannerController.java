@@ -22,6 +22,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/banner")
+@CrossOrigin
 @Api("轮询图")
 public class TbBannerController {
     @Resource
@@ -35,8 +36,8 @@ public class TbBannerController {
 
     @PostMapping("/list")
     @ApiOperation(value = "web admin banner list")
-    public ResponseResult getBannerList(){
-        return bannerService.getBannerList();
+    public ResponseResult getBannerList(@RequestBody BannerVo vo){
+        return bannerService.getBannerList(vo);
     }
     @PostMapping("/update")
     @ApiOperation(value = "web admin update banner ")

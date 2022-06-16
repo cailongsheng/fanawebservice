@@ -27,6 +27,7 @@ import javax.annotation.Resource;
  * @since 2022-05-25
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/user/web")
 @Api(value = "用户管理模块")
 public class TbWebUserController {
