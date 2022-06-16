@@ -20,22 +20,32 @@ import java.util.List;
  * @since 2022-05-23
  */
 @RestController
-@RequestMapping("/tb-banner")
+@RequestMapping("/banner")
 @Api("轮询图")
 public class TbBannerController {
     @Resource
     ITbBannerService bannerService;
 
-    @PostMapping("/web/banner/redact")
-    @ApiOperation(value = "web admin banner 编辑")
-    public ResponseResult uploadBanner(@RequestBody List<BannerVo> banners){
+    @PostMapping("/save")
+    @ApiOperation(value = "web admin add banner")
+    public ResponseResult uploadBanner( List<BannerVo> banners){
        return bannerService.uploadBanner(banners);
     }
 
-    @GetMapping("/app/banner/down")
-    @ApiOperation(value = "app down load banner image")
-    public ResponseResult downLoadBanner(){
-        return bannerService.downLoadBanner();
+    @PostMapping("/list")
+    @ApiOperation(value = "web admin banner list")
+    public ResponseResult getBannerList(){
+        return bannerService.getBannerList();
+    }
+    @PostMapping("/update")
+    @ApiOperation(value = "web admin update banner ")
+    public ResponseResult updateBanner(@RequestBody BannerVo vo){
+        return bannerService.updateBanner(vo);
+    }
+    @PostMapping("/delete")
+    @ApiOperation(value = "web admin delete banner ")
+    public ResponseResult deleteBanner(@RequestBody BannerVo vo){
+        return bannerService.deleteBanner(vo);
     }
 
 }

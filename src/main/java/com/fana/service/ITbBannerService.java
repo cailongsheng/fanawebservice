@@ -19,6 +19,9 @@ public interface ITbBannerService extends IService<TbBanner> {
 
     ResponseResult uploadBanner(List<BannerVo> banners);
 
-    ResponseResult downLoadBanner();
+    ResponseResult getBannerList();
 
+    ResponseResult updateBanner(BannerVo vo);
+
+    ResponseResult deleteBanner(BannerVo vo);
 }
