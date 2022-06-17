@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 
+import com.fana.entry.vo.CharityVo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -50,6 +51,11 @@ public class TbBanner extends Model {
 
     @TableField("target")
     private String target;
+    @TableField("charity_id")
+    private String charityId;
+
+    @TableField(exist = false)
+    private CharityVo charity;
 
 
 }
