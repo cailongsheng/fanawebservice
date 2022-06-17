@@ -42,21 +42,13 @@ public class TbBannerServiceImpl extends ServiceImpl<TbBannerMapper, TbBanner> i
     private String ip;
 
     @Override
-    public ResponseResult saveBanner(List<BannerVo> banners) {
-        banners.forEach(img -> {
-            try {
+    public ResponseResult saveBanner(BannerVo banners) {
                 bannerMapper.insert(TbBanner.builder()
-                        .target(img.getTarget())
-                        .imageName(img.getImageName())
-                        .imagePath(fileUtils.getFileName(img.getImagePath()))
-                        .charityId(img.getCharityId())
+                        .target(banners.getTarget())
+                        .imageName(banners.getImageName())
+                        .imagePath(fileUtils.getFileName(banners.getImagePath()))
+                        .charityId(banners.getCharityId())
                         .build());
-            } catch (Exception e) {
-                LogUtil.addErrorLog("创建banner异常", "/banner/save", ip, e.getMessage().substring(0, 200));
-                throw new CustomException(201, "File save failed.");
-            }
-
-        });
         return new ResponseResult(200, "success");
     }
 
@@ -94,7 +86,12 @@ public class TbBannerServiceImpl extends ServiceImpl<TbBannerMapper, TbBanner> i
         }
 
         try {
-            bannerMapper.updateById(TbBanner.builder().id(vo.getId()).imageName(vo.getImageName()).imagePath(fileUtils.getFileName(uploadPath)).target(vo.getTarget()).build());
+            bannerMapper.updateById(TbBanner.builder()
+                    .id(vo.getId()).imageName(vo.getImageName())
+                    .imagePath(fileUtils.getFileName(uploadPath))
+                    .target(vo.getTarget())
+                    .charityId(vo.getCharityId())
+                    .build());
         } catch (Exception e) {
             LogUtil.addErrorLog("保存banner异常", "/banner/update/id", ip, e.getMessage().substring(0, 200));
             throw new CustomException(201, "banner update failed.");

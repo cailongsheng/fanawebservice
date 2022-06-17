@@ -30,7 +30,7 @@ public class TbBannerController {
 
     @PostMapping("/save")
     @ApiOperation(value = "web admin add banner")
-    public ResponseResult saveBanner(@RequestBody List<BannerVo> banners){
+    public ResponseResult saveBanner(@RequestBody BannerVo banners){
        return bannerService.saveBanner(banners);
     }
 

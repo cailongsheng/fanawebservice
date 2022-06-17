@@ -18,7 +18,7 @@ import java.util.List;
  */
 public interface ITbBannerService extends IService<TbBanner> {
 
-    ResponseResult saveBanner(List<BannerVo> banners);
+    ResponseResult saveBanner(BannerVo banners);
 
     ResponseResult getBannerList(BannerVo vo);
 
