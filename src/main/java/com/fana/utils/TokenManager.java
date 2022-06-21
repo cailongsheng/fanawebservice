@@ -62,7 +62,8 @@ public class TokenManager {
         if(token == null || token.equals("")){  // 空token 返回false
 //            throw new CustomException(Status.TOKEN_ERROR.code,Status.TOKEN_ERROR.message);
             log.info("token is null");
-            return false;
+            throw new CustomException(Status.TOKEN_ERROR.code,"token is null");
+
         }
         String[] arr1 = token.split("_");   // 分解token
         if(arr1.length != 2){   // 格式不对返回false
@@ -71,15 +72,17 @@ public class TokenManager {
         try {
             String key = arr1[0] + prefix;
             Object o = redisTemplate.opsForValue().get(key);// 读取服务器token
-            if(o == null){
+            if(ObjectUtil.isEmpty(o)){
+                log.info("redis token is null");
                 throw new CustomException(Status.TOKEN_ERROR.code,Status.TOKEN_ERROR.message);
             }
             if(!token.equals(o.toString())){ // 服务器token 过期 或 与用户token 不相等返回false
-
+                log.info("token不匹配");
                 throw new CustomException(Status.TOKEN_ERROR.code,Status.TOKEN_ERROR.message);
             }
             TbWebUser tbWebUser = webUserMapper.selectById(arr1[0]);
             if(ObjectUtil.isEmpty(tbWebUser)){
+                log.info("db user 不存在");
                 throw new CustomException(Status.TOKEN_ERROR.code,"User does not exist");
             }
 
@@ -89,7 +92,7 @@ public class TokenManager {
         }catch (Exception e){
             System.out.println(e);
         }
-        return false;
+        throw new CustomException(Status.TOKEN_ERROR.code,Status.TOKEN_ERROR.message);
     }
 
     public static void main(String[] args) {
