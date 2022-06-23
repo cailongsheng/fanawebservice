@@ -11,7 +11,8 @@
             ch.`description`,
             ch.`is_show` as isShow,
             ch.`image_url` as imageUrl,
-            ch.`means`
+            ch.`means`,
+            ch.`sort_id` as sortId
         from
             tb_charity ch
         left join tb_class cl
@@ -31,6 +32,12 @@
         </if>
         <if test="vo.sortId != null and vo.sortId == 1">
             order by ch.`charity` asc
+        </if>
+        <if test="vo.sortId != null and vo.sortId == 2">
+            order by isnull(ch.`sort_id`),ch.`sort_id` asc
+        </if>
+        <if test="vo.sortId != null and vo.sortId == 3">
+            order by isnull(ch.`sort_id`),ch.`sort_id` desc
         </if>
         limit #{vo.pageNum},#{vo.pageSize}
     </select>

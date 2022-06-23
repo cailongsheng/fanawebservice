@@ -1,8 +1,6 @@
 package com.fana.entry.vo;
 
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.Serializable;
 @Data
 public class GetCharityListVo implements Serializable {
@@ -23,4 +21,6 @@ public class GetCharityListVo implements Serializable {
     private String imageUrl;
 
     private String means;
+
+    private Integer sortId;
 }

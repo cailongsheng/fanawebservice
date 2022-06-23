@@ -77,5 +77,7 @@ public class TbCharity extends Model {
      */
     private String means;
 
+    @TableField("sort_id")
+    private Integer sortId;
 
 }

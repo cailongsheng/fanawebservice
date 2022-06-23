@@ -72,6 +72,9 @@ public class TbAchievementTemplateServiceImpl extends ServiceImpl<TbAchievementT
     public ResponseResult updateAchievementTemplate(AchievementTemplateVo vo) {
         TbAchievementTemplate template = templateMapper.selectById(vo.getId());
         if(ObjectUtil.isEmpty(template)) throw new CustomException(Status.ACHIEVEMENT_TEMPLATE_NOT_EXIST.code,Status.ACHIEVEMENT_TEMPLATE_NOT_EXIST.message);
+        if(StrUtil.isNotBlank(template.getAchievementImgUrl()) && !template.getAchievementImgUrl().equals(fileUtils.getFileName(vo.getUrl()))){
+            fileUtils.deleteByFileName(template.getAchievementImgUrl(),"achievement");
+        }
         template.setAchievementImgUrl(fileUtils.getFileName(vo.getUrl()));
         template.setName(vo.getName());
         int insert = templateMapper.updateById(template);

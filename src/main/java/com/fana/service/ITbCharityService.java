@@ -5,6 +5,9 @@ import com.fana.entry.pojo.TbCharity;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fana.entry.vo.CharityVo;
 import com.fana.entry.vo.GetCharityListVo;
+import com.fana.entry.vo.UpdateSortVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -25,4 +28,6 @@ public interface ITbCharityService extends IService<TbCharity> {
     ResponseResult updateCharity(GetCharityListVo vo);
 
     ResponseResult deleteCharity(GetCharityListVo vo);
+
+    ResponseResult updateSort(List<UpdateSortVo> updateSortVos);
 }

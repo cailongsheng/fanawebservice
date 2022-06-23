@@ -11,6 +11,7 @@ import com.fana.entry.pojo.TbUserCharity;
 import com.fana.entry.vo.CharityVo;
 import com.fana.entry.vo.GetCharityListVo;
 import com.fana.entry.vo.IPageVo;
+import com.fana.entry.vo.UpdateSortVo;
 import com.fana.exception.CustomException;
 import com.fana.mapper.TbCharityMapper;
 import com.fana.mapper.TbClassMapper;
@@ -139,6 +140,21 @@ public class TbCharityServiceImpl extends ServiceImpl<TbCharityMapper, TbCharity
         charityMapper.deleteById(vo.getId());
         userCharityMapper.delete(new QueryWrapper<TbUserCharity>().lambda().eq(TbUserCharity::getCharityId,charity.getId()));
         return ResponseResult.success();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseResult updateSort(List<UpdateSortVo> vo) {
+        vo.forEach(a ->{
+            if(ObjectUtil.isEmpty(a.getId())){
+                throw new CustomException(Status.PARAMETER_ERROR.code,"The id did not fill in");
+            }
+            TbCharity charity = new TbCharity();
+            charity.setId(a.getId());
+            charity.setSortId(a.getSortId());
+            charityMapper.updateById(charity);
+        });
+        return  ResponseResult.success("success");
     }
 
 

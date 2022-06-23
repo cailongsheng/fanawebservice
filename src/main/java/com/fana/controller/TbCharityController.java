@@ -3,6 +3,8 @@ package com.fana.controller;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.fana.config.ResponseResult;
@@ -10,6 +12,7 @@ import com.fana.config.Status;
 import com.fana.entry.vo.CharityVo;
 import com.fana.entry.vo.GetCharityListVo;
 import com.fana.entry.vo.IPageVo;
+import com.fana.entry.vo.UpdateSortVo;
 import com.fana.exception.CustomException;
 import com.fana.service.ITbCharityService;
 import com.fana.utils.FileUtils;
@@ -20,6 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -95,6 +100,21 @@ public class TbCharityController {
             return new ResponseResult(Status.PARAMETER_ERROR.code, "The pageSize did not fill in  ");
         }
         return charityService.getCharityList(vo);
+    }
+
+    @PostMapping("/updateSort")
+    @ApiOperation("/排序接口")
+    public ResponseResult updateSort(@RequestBody String json){
+        if(StrUtil.isBlank(json)){
+            return new ResponseResult(Status.PARAMETER_ERROR.code,Status.PARAMETER_ERROR.message);
+        }
+        List<UpdateSortVo> updateSortVos = new ArrayList<>();
+        JSONArray objects = JSONUtil.parseArray(json);
+        objects.stream().forEach(a->{
+            UpdateSortVo updateSortVo = JSONUtil.toBean(a.toString(), UpdateSortVo.class);
+            updateSortVos.add(updateSortVo);
+        });
+        return charityService.updateSort(updateSortVos);
     }
 
     @PostMapping("/addCharity")
