@@ -30,7 +30,7 @@ public class FilesController {
 
 
     @PostMapping("/upload")
-    private ResponseResult upload(UploadFileVo vo) throws IOException {
+    public ResponseResult upload(UploadFileVo vo) {
         if(vo.getFile() == null){
             return new ResponseResult(Status.PARAMETER_ERROR.code, "The file did not fill in  ");
         }
@@ -51,7 +51,7 @@ public class FilesController {
     }
 
     @PostMapping("/delete")
-    private Boolean delete(String fileUrl){
+    public Boolean delete(String fileUrl){
         return fileUtils.deleteByFile(fileUrl);
     }
 
