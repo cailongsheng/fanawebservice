@@ -45,8 +45,7 @@ public class TokenInterceptor extends WebMvcConfigurationSupport {
 
         registry.addInterceptor(handlerInterceptor)
                 .addPathPatterns(
-                        "/user/web/**",
-                        "/user/app/**"
+                        "/user/**"
                 )
                 .excludePathPatterns(
                         "/user/web/login",
