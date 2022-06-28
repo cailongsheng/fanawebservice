@@ -67,7 +67,7 @@ public class TbUserMoneyServiceImpl extends ServiceImpl<TbUserMoneyMapper, TbUse
         queryWrapper.eq("email",money.getUsername());
         TbUser tbUser = userMapper.selectOne(queryWrapper);
         if (ObjectUtil.isNotNull(tbUser)) return ResponseResult.success(tbUser);
-        return new ResponseResult(200,"username is not exist");
+        return new ResponseResult(201,"username is not exist");
     }
 
     @Override
