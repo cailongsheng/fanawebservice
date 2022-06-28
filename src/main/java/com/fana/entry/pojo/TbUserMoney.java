@@ -65,7 +65,7 @@ public class TbUserMoney extends Model {
      * 删除
      */
     @TableField("is_delete")
-    private String isDelete;
+    private int isDelete;
 
     @TableField(value = "update_at",fill = FieldFill.INSERT_UPDATE)
     @DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss")//序列化
