@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+
 @Builder
 @Data
 @NoArgsConstructor
@@ -23,4 +24,14 @@ public class LoginVo implements Serializable {
     private String password;
     @ApiModelProperty(value = "角色")
     private int roles;
+    @ApiModelProperty(value = "邮箱")
+    private String email;
+    private Integer userId;
+
+    private String firstName;
+
+    private String lastName;
+
+    private String birthday;
+    private String token;
 }

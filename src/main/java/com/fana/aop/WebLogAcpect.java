@@ -1,5 +1,6 @@
 package com.fana.aop;
 
+import cn.hutool.core.util.ObjectUtil;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -57,7 +58,7 @@ public class WebLogAcpect {
     @AfterReturning(returning = "ret",pointcut = "webLog()")
     public void doAfterReturning(Object ret) {
         // 处理完请求，返回内容
-        logger.info("RESPONSE :（出参） " + ret.toString());
+        logger.info("RESPONSE :（出参） " + (ObjectUtil.isNull(ret)?null:ret.toString()));
     }
 }
 

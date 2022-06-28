@@ -31,11 +31,11 @@ public class TokenInterceptor extends WebMvcConfigurationSupport {
                 }
                 // 非OPTIONS请求TOKEN验证
                 String token = request.getHeader("Authorization");
-//                if (token == null) {
-//                    throw new CustomException(Status.TOKEN_NULL.code, Status.TOKEN_NULL.message);
-//                }
-//                boolean flag = tokenManager.checkToken(token);
-                return true;
+                if (token == null) {
+                    throw new CustomException(Status.TOKEN_ERROR.code, Status.TOKEN_ERROR.message);
+                }
+                boolean flag = tokenManager.checkToken(token);
+                return flag;
 
 
             }
@@ -43,21 +43,18 @@ public class TokenInterceptor extends WebMvcConfigurationSupport {
         };
 
 
-        registry.addInterceptor(handlerInterceptor).addPathPatterns("/**");
-//        registry.addInterceptor(handlerInterceptor).addPathPatterns("/api-staff/**")
-//                .excludePathPatterns(
-//                        "/api-print/**",
-//                        "/webjars/**",
-//                        "/swagger-resources/**",
-//                        "/swagger-ui.html/**",
-//                        "/**/login",
-//                        "/**/logout",
-//                        "/**/register",
-//                        "/error",
-//                        "/api-trolley/app/gainCode",
-//                        "/api-trolley/app/analysisCode"
-//
-//                );
+        registry.addInterceptor(handlerInterceptor)
+                .addPathPatterns(
+                        "/user/**"
+                )
+                .excludePathPatterns(
+                        "/user/web/login",
+                        "/webjars/**",
+                        "/swagger-resources/**",
+                        "/swagger-ui.html/**",
+                        "/error"
+
+                );
 
     }
 

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fana.mapper.TbCharityMapper">
+    <select id="getCharityList" parameterType="com.fana.entry.vo.CharityVo" resultType="com.fana.entry.vo.GetCharityListVo">
+        select
+            ch.id,
+            ch.`charity` as charityName,
+            cl.`id` as categoryId,
+            cl.`class_type` as categoryName,
+            ch.`website`,
+            ch.`description`,
+            ch.`is_show` as isShow,
+            ch.`image_url` as imageUrl,
+            ch.`means`,
+            ch.`sort_id` as sortId
+        from
+            tb_charity ch
+        left join tb_class cl
+            on cl.id = ch.`classs`
+        where 1 = 1
+        <if test=" vo.categoryId != null">
+            and ch.`classs` = #{vo.categoryId}
+        </if>
+        <if test=" vo.charityName != null and vo.charityName !=''">
+            and ch.`charity` like concat('%',#{vo.charityName},'%')
+        </if>
+        <if test=" vo.isShow != null and vo.isShow !=''">
+            and ch.`is_show` = #{vo.isShow}
+        </if>
+        <if test="vo.sortId != null and vo.sortId == 0">
+            order by ch.`charity` desc
+        </if>
+        <if test="vo.sortId != null and vo.sortId == 1">
+            order by ch.`charity` asc
+        </if>
+        <if test="vo.sortId != null and vo.sortId == 2">
+            order by isnull(ch.`sort_id`),ch.`sort_id` asc
+        </if>
+        <if test="vo.sortId != null and vo.sortId == 3">
+            order by isnull(ch.`sort_id`),ch.`sort_id` desc
+        </if>
+        limit #{vo.pageNum},#{vo.pageSize}
+    </select>
+    <select id="getCharityListCount" parameterType="com.fana.entry.vo.CharityVo" resultType="int">
+        select
+        count(*)
+        from
+        tb_charity ch
+        left join tb_class cl
+        on cl.id = ch.`classs`
+        where 1 = 1
+        <if test=" vo.categoryId != null">
+            and ch.`classs` = #{vo.categoryId}
+        </if>
+        <if test=" vo.charityName != null and vo.charityName !=''">
+            and ch.`charity` like concat('%',#{vo.charityName},'%')
+        </if>
+        <if test=" vo.isShow != null and vo.isShow !=''">
+            and ch.`is_show` = #{vo.isShow}
+        </if>
+    </select>
+</mapper>

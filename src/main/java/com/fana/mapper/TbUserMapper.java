@@ -1,6 +1,7 @@
 package com.fana.mapper;
 
 import com.fana.entry.pojo.TbUser;
+import com.fana.entry.pojo.TbWebUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
