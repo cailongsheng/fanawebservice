@@ -68,12 +68,12 @@ public class ApiUserMoneyVo {
 
 
 
-    @DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss")//序列化
-    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="dd/MM/yyyy")//反序列化
+//    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")//序列化
+//    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="dd/MM/yyyy")//反序列化
     private LocalDateTime updateAt;
 
 
-    @DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss")//序列化
-    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="dd/MM/yyyy")//反序列化
+//    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")//序列化
+//    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="dd/MM/yyyy")//反序列化
     private LocalDateTime createAt;
 }
