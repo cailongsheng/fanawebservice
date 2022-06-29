@@ -3,6 +3,7 @@ package com.fana.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.fana.config.ResponseResult;
 import com.fana.config.Status;
 import com.fana.entry.pojo.TbCharity;
@@ -150,9 +151,10 @@ public class TbCharityServiceImpl extends ServiceImpl<TbCharityMapper, TbCharity
                 throw new CustomException(Status.PARAMETER_ERROR.code,"The id did not fill in");
             }
             TbCharity charity = new TbCharity();
-            charity.setId(a.getId());
-            charity.setSortId(a.getSortId());
-            charityMapper.updateById(charity);
+//            charity.setId(a.getId());
+//            charity.setSortId(a.getSortId());
+
+            charityMapper.update(charity,new UpdateWrapper<TbCharity>().set("sort_id",a.getSortId()).eq("id",a.getId()));
         });
         return  ResponseResult.success("success");
     }
