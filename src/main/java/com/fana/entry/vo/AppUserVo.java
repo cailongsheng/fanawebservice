@@ -41,4 +41,6 @@ public class AppUserVo {
     private Integer sex;//0:女 1:男
     private String avator;//头像
     private Integer isDelete;//头像
+    @ApiModelProperty(value = "查询登入来源 all，apple，google")
+    private Integer type;
 }

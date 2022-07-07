@@ -59,4 +59,54 @@
             and ch.`is_show` = #{vo.isShow}
         </if>
     </select>
+
+    <select id="getUserList" parameterType="com.fana.entry.vo.AppUserVo" resultType="com.fana.entry.vo.AppUserListVo">
+        SELECT
+          us.id,
+          us.email,
+          us.first_name AS firstName,
+          us.`last_name` AS lastName,
+          us.sex,
+          us.`birthday`,
+          us.avator,
+          us.`is_delete` AS isDelete,
+          GROUP_CONCAT(th.`type`) AS TYPE
+        FROM
+          tb_user us
+          LEFT JOIN tb_third_party_user th
+            ON us.`id` = th.`user_id`
+            WHERE 1=1
+            <if test=" vo.search != null and vo.search !=''">
+                AND (us.`email` LIKE concat('%',#{vo.search},'%') OR us.`first_name` LIKE concat('%',#{vo.search},'%') OR us.last_name like concat('%',#{vo.search},'%'))
+            </if>
+            <if test=" vo.type != null and vo.type == 1">
+                and th.type = 'apple'
+            </if>
+            <if test=" vo.type != null and vo.type == 2">
+                and th.type = 'google'
+            </if>
+        GROUP BY us.id
+        limit #{vo.pageNum},#{vo.pageSize}
+    </select>
+
+    <select id="getUserListCount" parameterType="com.fana.entry.vo.AppUserVo" resultType="int">
+    select count(*) from (
+        SELECT
+            us.id
+        FROM
+        tb_user us
+        LEFT JOIN tb_third_party_user th
+        ON us.`id` = th.`user_id`
+        WHERE 1=1
+        <if test=" vo.search != null and vo.search !=''">
+            AND (us.`email` LIKE concat('%',#{vo.search},'%') OR us.`first_name` LIKE concat('%',#{vo.search},'%') OR us.last_name like concat('%',#{vo.search},'%'))
+        </if>
+        <if test=" vo.type != null and vo.type == 1">
+            and th.type = 'apple'
+        </if>
+        <if test=" vo.type != null and vo.type == 2">
+            and th.type = 'google'
+        </if>
+        GROUP BY us.id) a
+    </select>
 </mapper>
