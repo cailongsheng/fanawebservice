@@ -52,8 +52,8 @@ public class TbLeaderBoardServiceImpl extends ServiceImpl<TbLeaderBoardMapper, T
         String path = ip + "leader/";
         LogUtil.addInfoLog("get leader board list", "/leader/board/list", vo.toString());
         QueryWrapper<TbLeaderBoard> queryWrapper = new QueryWrapper<>();
-        if (ObjectUtil.isNotEmpty(vo.getIsDelete()))
-            queryWrapper.eq("is_delete", vo.getIsDelete());
+//        if (ObjectUtil.isNotEmpty(vo.getIsDelete()))
+            queryWrapper.ne("is_delete", 1);
         if (ObjectUtil.isNotEmpty(vo.getCategory()))
             queryWrapper.eq("category", vo.getCategory());
         IPage<TbLeaderBoard> boardIPage = leaderBoardMapper.selectPage(new Page<>(vo.getPageNum(), vo.getPageSize()), queryWrapper);
