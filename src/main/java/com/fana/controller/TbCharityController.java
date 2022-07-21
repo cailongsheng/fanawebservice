@@ -133,7 +133,7 @@ public class TbCharityController {
     }
 
     @PostMapping("/updateCharity")
-    @ApiOperation("添加机构信息")
+    @ApiOperation("更新机构信息")
     public ResponseResult updateCharity(@RequestBody GetCharityListVo vo){
         if(ObjectUtil.isEmpty(vo)) {
             return new ResponseResult(Status.PARAMETER_ERROR.code, Status.PARAMETER_ERROR.message);
