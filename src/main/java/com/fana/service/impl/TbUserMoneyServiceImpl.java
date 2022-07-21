@@ -52,6 +52,7 @@ public class TbUserMoneyServiceImpl extends ServiceImpl<TbUserMoneyMapper, TbUse
                     .money(ObjectUtil.isNull(money.getMoney()) ? new BigDecimal("0.00") : money.getMoney())
                     .userId(ObjectUtil.isNull(money.getUserId()) ? -1 : money.getUserId())
                     .username(StrUtil.isBlank(money.getUsername()) ? "-" : money.getUsername())
+                    .currency(StrUtil.isBlank(money.getCurrency()) ? "GBP" : money.getCurrency())
                     .build());
         } catch (Exception e) {
             LogUtil.addErrorLog("添加用户捐款error", "/user/money/add", JSON.toJSON(e.getMessage()));

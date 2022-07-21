@@ -78,5 +78,10 @@ public class TbUserMoney extends Model {
     @TableField(value = "is_delete")
     private int isDelete;
 
+    /**
+     * 币种
+     */
+    private String currency;
+
 
 }

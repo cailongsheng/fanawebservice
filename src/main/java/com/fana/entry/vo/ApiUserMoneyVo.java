@@ -66,7 +66,10 @@ public class ApiUserMoneyVo {
      */
     private String isDelete;
 
-
+    /**
+     * 币种
+     */
+    private String currency;
 
 //    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")//序列化
 //    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="dd/MM/yyyy")//反序列化
