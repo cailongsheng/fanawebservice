@@ -20,6 +20,8 @@ public class GetCharityListVo implements Serializable {
 
     private String imageUrl;
 
+    private String imageUrlBack;
+
     private String means;
 
     private Integer sortId;

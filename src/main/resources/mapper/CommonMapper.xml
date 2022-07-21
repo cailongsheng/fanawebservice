@@ -11,6 +11,7 @@
             ch.`description`,
             ch.`is_show` as isShow,
             ch.`image_url` as imageUrl,
+            ch.`image_url_back` as imageUrlBack,
             ch.`means`,
             ch.`sort_id` as sortId
         from
