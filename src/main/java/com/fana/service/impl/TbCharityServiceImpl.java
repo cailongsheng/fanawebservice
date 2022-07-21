@@ -58,6 +58,13 @@ public class TbCharityServiceImpl extends ServiceImpl<TbCharityMapper, TbCharity
         return ResponseResult.success(tbClasses);
     }
 
+    /**
+     * 修改:2022年7月21日11:54:05
+     * 内容: GetCharityListVo 添加新字段 imageUrlBack  机构海报图
+     * by: wwm
+     * @param vo
+     * @return
+     */
     @Override
     public ResponseResult getCharityList(CharityVo vo) {
         IPageVo iPageVo = new IPageVo();
@@ -76,6 +83,7 @@ public class TbCharityServiceImpl extends ServiceImpl<TbCharityMapper, TbCharity
         list.stream().forEach(a->{
             if(StrUtil.isNotBlank(a.getImageUrl())){
                 a.setImageUrl(fanaIp+"charity/"+a.getImageUrl());
+                a.setImageUrlBack(fanaIp+"charity/"+a.getImageUrlBack());
             }
             try {
                 a.setDescription( new String(a.getDescription().getBytes("ISO-8859-1"),"utf-8") );
@@ -119,6 +127,7 @@ public class TbCharityServiceImpl extends ServiceImpl<TbCharityMapper, TbCharity
         charity.setDescription(vo.getDescription());
 //        fileUtils.deleteByFileName(charity.getImageUrl(),"charity");
         charity.setImageUrl(fileUtils.getFileName(vo.getImageUrl()));
+        charity.setImageUrlBack(fileUtils.getFileName(vo.getImageUrlBack()));
         charity.setIsShow(vo.getIsShow());
         charity.setWebsite(vo.getWebsite());
         if(StrUtil.isBlank(vo.getMeans())){
