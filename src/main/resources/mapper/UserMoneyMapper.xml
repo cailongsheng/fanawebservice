@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fana.mapper.TbUserMoneyMapper">
+    <select id="getUserMoneyList" parameterType="com.fana.entry.vo.ApiUserMoneyVo"
+            resultType="com.fana.entry.vo.ApiUserMoneyVo">
+        SELECT
+        tbu.email,
+        tbo.currency,
+        tbo.order_no AS orderNumber,
+        tbo.total_amount AS money,
+        tbo.charity_id AS charityId,
+        tbc.charity AS charityName,
+        tbo.user_id AS userId,
+        tbo.create_at AS createAt,
+        tbo.update_at AS updateAt
+        FROM tb_order tbo
+        LEFT JOIN tb_charity tbc
+        ON tbo.charity_id = tbc.id
+        LEFT JOIN tb_user tbu
+        ON tbo.user_id = tbu.id
+        WHERE tbo.type = "WALLETPAY"
+        <if test=" vo.search != null and vo.search !='' ">
+            and (tbu.email like concat('%',#{vo.search},'%') or tbc.charity like concat('%',#{vo.search},'%'))
+        </if>
+        limit #{vo.pageNum},#{vo.pageSize}
+    </select>
+    <select id="getUserMoneyCount" resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM tb_order tbo
+        LEFT JOIN tb_charity tbc
+        ON tbo.charity_id = tbc.id
+        LEFT JOIN tb_user tbu
+        ON tbo.user_id = tbu.id
+        WHERE tbo.type = "WALLETPAY"
+        <if test=" vo.search != null and vo.search !='' ">
+            and (tbu.email like concat('%',#{vo.search},'%') or tbc.charity like concat('%',#{vo.search},'%'))
+        </if>
+    </select>
+
+</mapper>
