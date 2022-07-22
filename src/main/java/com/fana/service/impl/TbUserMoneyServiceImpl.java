@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * <p>
@@ -74,19 +75,28 @@ public class TbUserMoneyServiceImpl extends ServiceImpl<TbUserMoneyMapper, TbUse
     @Override
     public ResponseResult getUserMoneyList(ApiUserMoneyVo money) {
         LogUtil.addInfoLog("获取用户捐款数据列表", "/user/money/list", JSON.toJSON(money));
+        long num = money.getPageNum();
         if (ObjectUtil.isNull(money.getPageNum())) money.setPageNum(1);
         if (ObjectUtil.isNull(money.getPageSize())) money.setPageSize(10);
-        QueryWrapper<TbUserMoney> queryWrapper = new QueryWrapper<>();
-        if (StrUtil.isNotBlank(money.getSearch()))
-            queryWrapper.ne("is_delete", 1).like("username", money.getSearch()).or()
-                    .like("charity_name", money.getSearch()).orderByDesc("create_at");
-        IPage<TbUserMoney> selectPage = userMoneyMapper.selectPage(new Page(money.getPageNum(), money.getPageSize()), queryWrapper);
+        //page
+        if (money.getPageNum() == 1||money.getPageNum() ==0) {
+            money.setPageNum(0l);
+        } else {
+            money.setPageNum((money.getPageNum() - 1) * money.getPageSize());
+        }
+//        QueryWrapper<TbUserMoney> queryWrapper = new QueryWrapper<>();
+//        if (StrUtil.isNotBlank(money.getSearch()))
+//            queryWrapper.ne("is_delete", 1).like("email", money.getSearch()).or()
+//                    .like("charity_name", money.getSearch()).orderByDesc("create_at");
+//        IPage<TbUserMoney> selectPage = userMoneyMapper.selectPage(new Page(money.getPageNum(), money.getPageSize()), queryWrapper);
+        Integer count =  userMoneyMapper.getUserMoneyCount(money);
+        List<ApiUserMoneyVo> userMoneyList = userMoneyMapper.getUserMoneyList(money);
         IPageVo build = new  IPageVo();
-        build.setPageNum(selectPage.getCurrent());
-        build.setPageSize(selectPage.getSize());
-        build.setTotal(selectPage.getTotal());
-        build.setList(selectPage.getRecords());
-        LogUtil.returnInfoLog("获取用户捐款数据列表(返回数据)", "/user/money/list", JSON.toJSON(money));
+        build.setPageNum(num);
+        build.setPageSize(money.getPageSize());
+        build.setTotal(count);
+        build.setList(userMoneyList);
+        LogUtil.returnInfoLog("获取用户捐款数据列表(返回数据)", "/user/money/list", build);
         return ResponseResult.success(build);
     }
 
