@@ -90,6 +90,29 @@
         limit #{vo.pageNum},#{vo.pageSize}
     </select>
 
+    <select id="selectUserList" parameterType="com.fana.entry.vo.RechargeRecordVo"
+            resultType="com.fana.entry.pojo.TbUser">
+        SELECT
+        us.id,
+        us.email,
+        us.first_name AS firstName,
+        us.`last_name` AS lastName,
+        us.sex,
+        us.`birthday`,
+        us.avator,
+        us.`is_delete` AS isDelete,
+        us.`type` AS TYPE
+        FROM
+        tb_user us
+        WHERE 1=1
+        <if test="vo.email != null and vo.email !=''">
+            AND us.`email` LIKE concat('%',#{vo.email},'%')
+        </if>
+        <if test="vo.userName != null and vo.userName !=''">
+            AND concat(us.first_name, us.`last_name`) LIKE concat('%',#{vo.userName},'%')
+        </if>
+    </select>
+
     <select id="getUserListCount" parameterType="com.fana.entry.vo.AppUserVo" resultType="int">
     select count(*) from (
         SELECT
