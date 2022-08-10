@@ -36,8 +36,14 @@ public class LeaderBoardListVo implements Serializable {
 
     private int charityId;
 
+    @TableField(value = "update_at",fill = FieldFill.INSERT_UPDATE)
+    @DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss")//序列化
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="dd/MM/yyyy")//反序列化
     private LocalDateTime updateAt;
 
+    @TableField(value = "create_at",fill = FieldFill.INSERT)
+    @DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss")//序列化
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="dd/MM/yyyy")//反序列化
     private LocalDateTime createAt;
 
     private Integer category;
