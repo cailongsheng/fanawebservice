@@ -68,11 +68,6 @@ public class TbLeaderBoard extends Model {
      */
     @TableField("charity_id")
     private int charityId;
-    /**
-     * 机构name
-     */
-    @TableField("charity_id")
-    private String charityName;
 
     @TableField(value = "update_at",fill = FieldFill.INSERT_UPDATE)
     @DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss")//序列化
