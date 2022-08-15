@@ -25,8 +25,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import static java.util.stream.Collectors.toList;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -66,7 +65,7 @@ public class TbWalletLogServiceImpl extends ServiceImpl<TbWalletLogMapper, TbWal
                 || StringUtils.isNotBlank(rechargeRecordVo.getUserName())) {
             List<TbUser> userList = charityMapper.selectUserList(rechargeRecordVo);
             if (CollectionUtils.isNotEmpty(userList)) {
-                List<Integer> collect = userList.parallelStream().map(TbUser::getId).collect(toList());
+                List<Integer> collect = userList.parallelStream().map(TbUser::getId).collect(Collectors.toList());
                 queryWrapper.in("user_id", collect);
                 IPage<TbWalletLog> walletLogIPage = walletLogMapper.selectPage(pageEntity, queryWrapper);
                 iPageVo = assembleRechargeRecordIPageVo(userList, walletLogIPage);
@@ -74,7 +73,7 @@ public class TbWalletLogServiceImpl extends ServiceImpl<TbWalletLogMapper, TbWal
         } else {
             IPage<TbWalletLog> walletLogIPage = walletLogMapper.selectPage(pageEntity, queryWrapper);
             if (Objects.nonNull(walletLogIPage) && CollectionUtils.isNotEmpty(walletLogIPage.getRecords())) {
-                List<Integer> collect = walletLogIPage.getRecords().stream().map(TbWalletLog::getUserId).collect(toList());
+                List<Integer> collect = walletLogIPage.getRecords().stream().map(TbWalletLog::getUserId).collect(Collectors.toList());
                 List<TbUser> userList = userMapper.selectList(new QueryWrapper<TbUser>().in("id", collect));
                 iPageVo = assembleRechargeRecordIPageVo(userList, walletLogIPage);
             }
@@ -97,7 +96,7 @@ public class TbWalletLogServiceImpl extends ServiceImpl<TbWalletLogMapper, TbWal
             walletLogIPage.getRecords().forEach(item -> {
                 RechargeRecordVo rechargeRecordVo = new RechargeRecordVo();
                 BeanUtils.copyProperties(item, rechargeRecordVo);
-                TbUser tbUser = userList.parallelStream().filter(user -> Objects.equals(item.getUserId(), user.getId())).collect(toList()).get(0);
+                TbUser tbUser = userList.parallelStream().filter(user -> Objects.equals(item.getUserId(), user.getId())).collect(Collectors.toList()).get(0);
                 rechargeRecordVo.setUserName(tbUser.getFirstName() + tbUser.getLastName());
                 rechargeRecordVo.setEmail(tbUser.getEmail());
                 rechargeRecordVo.setFirstName(tbUser.getFirstName());
