@@ -60,7 +60,7 @@ public class TbMerchantController {
                 throw new CustomException(Status.PARAMETER_VERIFICATION_NOT_PASS.getCode(), Status.PARAMETER_VERIFICATION_NOT_PASS.getMessage());
             }
 
-            if (StringUtils.isBlank(merchantVO.getEmail()) && StringUtils.isBlank(merchantVO.getMobile())) {
+            if (StringUtils.isBlank(merchantVO.getEmail())) {
                 throw new CustomException(Status.PARAMETER_VERIFICATION_NOT_PASS.getCode(), Status.PARAMETER_VERIFICATION_NOT_PASS.getMessage());
             }
             log.info("FanaWeb|TbMerchantController|addMerchant|requestParameters:{}", JSON.toJSONString(merchantVO));
