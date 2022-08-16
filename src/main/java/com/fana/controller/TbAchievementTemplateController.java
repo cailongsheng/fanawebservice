@@ -3,7 +3,6 @@ package com.fana.controller;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.fana.config.ResponseResult;
 import com.fana.config.Status;
 import com.fana.entry.vo.AchievementTemplateVo;
@@ -12,6 +11,7 @@ import com.fana.service.ITbAchievementTemplateService;
 import com.fana.utils.FileUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
