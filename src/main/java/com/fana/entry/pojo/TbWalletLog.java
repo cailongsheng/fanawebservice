@@ -56,11 +56,11 @@ public class TbWalletLog extends Model {
 
     @TableField(value = "create_at",fill = FieldFill.INSERT)
     @DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss")//序列化
-    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="dd/MM/yyyy")//反序列化
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="dd/MM/yyyy HH:mm")//反序列化
     private LocalDateTime createAt;
 
     @DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss")//序列化
-    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="dd/MM/yyyy")//反序列化
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="dd/MM/yyyy HH:mm")//反序列化
     @TableField(value = "update_at",fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateAt;
 
