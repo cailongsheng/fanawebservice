@@ -1,32 +1,38 @@
 package com.fana.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.generator.config.IFileCreate;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fana.config.ResponseResult;
 import com.fana.config.Status;
 import com.fana.entry.pojo.TbCharity;
+import com.fana.entry.pojo.TbClass;
 import com.fana.entry.pojo.TbLeaderBoard;
 import com.fana.entry.vo.IPageVo;
+import com.fana.entry.vo.LeaderBoardListVo;
 import com.fana.entry.vo.LeaderBoardVo;
 import com.fana.exception.CustomException;
 import com.fana.mapper.TbCharityMapper;
+import com.fana.mapper.TbClassMapper;
 import com.fana.mapper.TbLeaderBoardMapper;
 import com.fana.service.ITbLeaderBoardService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fana.utils.FileUtils;
 import com.fana.utils.LogUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -41,6 +47,8 @@ public class TbLeaderBoardServiceImpl extends ServiceImpl<TbLeaderBoardMapper, T
     @Resource
     TbLeaderBoardMapper leaderBoardMapper;
     @Resource
+    TbClassMapper classMapper;
+    @Resource
     FileUtils fileUtils;
     @Resource
     TbCharityMapper charityMapper;
@@ -52,23 +60,34 @@ public class TbLeaderBoardServiceImpl extends ServiceImpl<TbLeaderBoardMapper, T
         String path = ip + "leader/";
         LogUtil.addInfoLog("get leader board list", "/leader/board/list", vo.toString());
         QueryWrapper<TbLeaderBoard> queryWrapper = new QueryWrapper<>();
-        if (ObjectUtil.isNotEmpty(vo.getIsDelete()))
-            queryWrapper.eq("is_delete", vo.getIsDelete());
+//        if (ObjectUtil.isNotEmpty(vo.getIsDelete()))
+            queryWrapper.ne("is_delete", 1);
         if (ObjectUtil.isNotEmpty(vo.getCategory()))
             queryWrapper.eq("category", vo.getCategory());
         IPage<TbLeaderBoard> boardIPage = leaderBoardMapper.selectPage(new Page<>(vo.getPageNum(), vo.getPageSize()), queryWrapper);
+        List<LeaderBoardListVo> list = new ArrayList<>();
         boardIPage.getRecords().forEach(leader -> {
-            TbCharity tbCharity = charityMapper.selectById(leader.getId());
-            if (ObjectUtil.isNotNull(tbCharity))
-                leader.setCharityName(tbCharity.getCharity());
+            LeaderBoardListVo leaderBoardListVo = new LeaderBoardListVo();
+            TbCharity tbCharity = charityMapper.selectById(leader.getCharityId());
+            if (ObjectUtil.isNotNull(tbCharity)) {
+                leaderBoardListVo.setCharityName(tbCharity.getCharity());
+                if(StrUtil.isNotBlank(tbCharity.getImageUrl())) {
+                    leaderBoardListVo.setImageUrl(ip + "charity/" + tbCharity.getImageUrl());
+                }
+                TbClass tbClass = classMapper.selectById(tbCharity.getClasss());
+                    //categoryName, imageUrl
+                if(ObjectUtil.isNotEmpty(tbClass))  leaderBoardListVo.setCategoryName(tbClass.getClassType());
+            }
             leader.setActivityImageUrl(path + leader.getActivityImageUrl());
-            leader.setCategory(vo.getCategory());
+            leader.setCategory(leader.getCategory());
+            BeanUtil.copyProperties(leader,leaderBoardListVo);
+            list.add(leaderBoardListVo);
         });
         IPageVo iPageVo = new IPageVo();
         iPageVo.setPageNum(boardIPage.getCurrent());
         iPageVo.setPageSize(boardIPage.getSize());
         iPageVo.setTotal(boardIPage.getTotal());
-        iPageVo.setList(boardIPage.getRecords());
+        iPageVo.setList(list);
         LogUtil.returnInfoLog("get leader board list", "/leader/board/list", iPageVo.toString());
         return ResponseResult.success(iPageVo);
     }
@@ -140,9 +159,20 @@ public class TbLeaderBoardServiceImpl extends ServiceImpl<TbLeaderBoardMapper, T
             TbLeaderBoard tbLeaderBoard = leaderBoardMapper.selectById(vo.getId());
             if (ObjectUtil.isNull(tbLeaderBoard)) return ResponseResult.success();
             TbCharity tbCharity = charityMapper.selectById(tbLeaderBoard.getCharityId());
-            if (ObjectUtil.isNotNull(tbCharity))
-                tbLeaderBoard.setCharityName(tbCharity.getCharity());
-            return ResponseResult.success(JSON.toJSON(tbLeaderBoard));
+            LeaderBoardListVo leaderBoardListVo = new LeaderBoardListVo();
+            if (ObjectUtil.isNotNull(tbCharity)) {
+                leaderBoardListVo.setCharityName(tbCharity.getCharity());
+                if (StrUtil.isNotBlank(tbCharity.getImageUrl())) {
+                    leaderBoardListVo.setImageUrl(ip + "charity/" + tbCharity.getImageUrl());
+                }
+                TbClass tbClass = classMapper.selectById(tbCharity.getClasss());
+                //categoryName, imageUrl
+                if (ObjectUtil.isNotEmpty(tbClass)) {
+                    leaderBoardListVo.setCategoryName(tbClass.getClassType());
+                }
+                BeanUtil.copyProperties(tbCharity,leaderBoardListVo);
+            }
+            return ResponseResult.success(JSON.toJSON(leaderBoardListVo));
         } catch (Exception e) {
             LogUtil.addErrorLog("获取leader board error", "/leader/board/select", e.getMessage());
             throw new CustomException(201, e.getMessage());

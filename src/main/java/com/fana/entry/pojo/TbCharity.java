@@ -67,10 +67,18 @@ public class TbCharity extends Model {
     private Integer isShow;
 
     /**
-     * 机构图片
+            * 机构图片
      */
     @TableField("image_url")
     private String imageUrl;
+
+    /**
+            * 机构海报图片
+     */
+    @TableField("image_url_back")
+    private String imageUrlBack;
+
+
 
     /**
      * 富文本编辑

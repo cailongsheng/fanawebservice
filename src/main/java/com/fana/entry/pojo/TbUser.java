@@ -96,4 +96,9 @@ public class TbUser extends Model {
     @TableField(exist = false)
     private int platform =1;
 
+    @TableField("open_id")
+    private String openId;
+
+    //(0,passwd,1,apple,2google)
+    private Integer type;
 }

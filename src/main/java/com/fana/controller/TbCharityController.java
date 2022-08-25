@@ -5,19 +5,17 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
-import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.fana.config.ResponseResult;
 import com.fana.config.Status;
 import com.fana.entry.vo.CharityVo;
 import com.fana.entry.vo.GetCharityListVo;
-import com.fana.entry.vo.IPageVo;
 import com.fana.entry.vo.UpdateSortVo;
 import com.fana.exception.CustomException;
 import com.fana.service.ITbCharityService;
 import com.fana.utils.FileUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -133,7 +131,7 @@ public class TbCharityController {
     }
 
     @PostMapping("/updateCharity")
-    @ApiOperation("添加机构信息")
+    @ApiOperation("更新机构信息")
     public ResponseResult updateCharity(@RequestBody GetCharityListVo vo){
         if(ObjectUtil.isEmpty(vo)) {
             return new ResponseResult(Status.PARAMETER_ERROR.code, Status.PARAMETER_ERROR.message);

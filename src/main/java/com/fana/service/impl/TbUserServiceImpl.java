@@ -4,23 +4,22 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fana.config.ResponseResult;
 import com.fana.config.Status;
 import com.fana.entry.pojo.TbUser;
+import com.fana.entry.vo.AppUserListVo;
 import com.fana.entry.vo.AppUserVo;
 import com.fana.entry.vo.IPageVo;
 import com.fana.exception.CustomException;
+import com.fana.mapper.TbCharityMapper;
 import com.fana.mapper.TbUserMapper;
 import com.fana.service.ITbUserService;
 import com.fana.utils.FileUtils;
 import com.fana.utils.LogUtil;
 import com.fana.utils.MD5Util;
 import com.fana.utils.TokenManager;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -42,22 +42,39 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
     @Value("${fana.ip}")
     private String fanaIp;
 
+    @Resource
+    private TbCharityMapper charityMapper;
+
     @Override
     public ResponseResult getList(AppUserVo vo) {
         LogUtil.addInfoLog("(app)获取用户列表", "/user/app/list", JSON.toJSON(vo));
-        QueryWrapper<TbUser> queryWrapper = new QueryWrapper<>();
-        if (StrUtil.isNotBlank(vo.getSearch()))
-            queryWrapper.like("email", vo.getSearch()).or().like("last_name", vo.getSearch())
-                    .or().like("first_name",vo.getSearch());
-        IPage<TbUser> page = new Page<>(vo.getPageNum(), vo.getPageSize());
-        IPage<TbUser> iPage = userMapper.selectPage(page, queryWrapper);
-        iPage.getRecords().stream().forEach(a->{
+        IPageVo iPageVo = new IPageVo();
+        iPageVo.setPageNum(vo.getPageNum());
+        iPageVo.setPageSize(vo.getPageSize());
+        //page
+        if (vo.getPageNum() == 1||vo.getPageNum() ==0) {
+            vo.setPageNum(0l);
+        } else {
+            vo.setPageNum((vo.getPageNum() - 1) * vo.getPageSize());
+        }
+        List<AppUserListVo> userList = charityMapper.getUserList(vo);
+        Integer userListCount = charityMapper.getUserListCount(vo);
+        iPageVo.setTotal(userListCount.longValue());
+        iPageVo.setList(userList);
+
+        userList.stream().forEach(a->{
             if(StrUtil.isNotBlank(a.getAvator())){
                 a.setAvator(fanaIp+"user/"+a.getAvator());
             }
+            if(ObjectUtil.isEmpty(a.getSex())) a.setSex(2);
+            if(StrUtil.isNotBlank(a.getType())){
+                List<Integer> integers = new ArrayList<>();
+                if(a.getType().contains("apple")) integers.add(1);
+                if(a.getType().contains("google")) integers.add(2);
+                a.setTypeList(integers);
+            }
         });
-        IPageVo build = IPageVo.builder().total(iPage.getTotal()).pageSize(iPage.getSize()).pageNum(iPage.getCurrent()).list(iPage.getRecords()).build();
-        return ResponseResult.success(build);
+        return ResponseResult.success(iPageVo);
     }
 
     @Override

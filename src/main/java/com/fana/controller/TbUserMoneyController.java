@@ -22,7 +22,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/user/money")
 @CrossOrigin
-@Api("用户捐款钱包")
+@Api("用户钱包捐款记录")
 public class TbUserMoneyController {
     @Resource
     ITbUserMoneyService userMoneyService;
@@ -39,7 +39,7 @@ public class TbUserMoneyController {
         return userMoneyService.checkUserMoney(money);
     }
 
-    @ApiOperation("获取用户钱包信息列表")
+    @ApiOperation("获取用户钱包捐款信息列表")
     @PostMapping("/list")
     public ResponseResult getUserMoneyList(@RequestBody ApiUserMoneyVo money){
         return  userMoneyService.getUserMoneyList(money);

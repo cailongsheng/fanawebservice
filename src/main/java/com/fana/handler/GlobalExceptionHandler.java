@@ -4,13 +4,16 @@ package com.fana.handler;
 
 
 import com.fana.config.ResponseResult;
+import com.fana.config.Status;
 import com.fana.exception.BaseException;
 import com.fana.exception.CustomException;
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 /**
  * 全局异常处理器
@@ -81,7 +84,12 @@ public class GlobalExceptionHandler
         log.error(e.getMessage(), e);
         return ResponseResult.error(-1,"Parameter format error!");
     }
-
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseResult fileSizeLimitExceededException(MaxUploadSizeExceededException e)
+    {
+        log.error(e.getMessage(), e);
+        return ResponseResult.error(Status.FILE_TYPE_ERROR.code,"the file is too large");
+    }
     /**
      * 自定义验证异常
      */

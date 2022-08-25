@@ -1,9 +1,8 @@
 package com.fana.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fana.config.ResponseResult;
 import com.fana.config.Status;
 import com.fana.entry.pojo.TbBanner;
@@ -13,9 +12,9 @@ import com.fana.entry.vo.IPageVo;
 import com.fana.exception.CustomException;
 import com.fana.mapper.TbBannerMapper;
 import com.fana.service.ITbBannerService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fana.utils.FileUtils;
 import com.fana.utils.LogUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

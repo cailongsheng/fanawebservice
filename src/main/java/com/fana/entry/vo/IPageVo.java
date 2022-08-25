@@ -16,6 +16,7 @@ public class IPageVo {
     private long pageNum;
     private long pageSize;
     private long total;
+    private long totalPageCount;
     private List list;
 
 }

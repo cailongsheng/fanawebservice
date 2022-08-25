@@ -24,10 +24,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author astupidcoder
@@ -43,7 +44,7 @@ public class TbUserMoneyServiceImpl extends ServiceImpl<TbUserMoneyMapper, TbUse
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResponseResult addUserMoney(ApiUserMoneyVo money) {
-        LogUtil.addInfoLog("添加用户捐款","/user/money/add", JSON.toJSON(money));
+        LogUtil.addInfoLog("添加用户捐款", "/user/money/add", JSON.toJSON(money));
         int id = 0;
         try {
             id = userMoneyMapper.insert(TbUserMoney.builder()
@@ -52,46 +53,60 @@ public class TbUserMoneyServiceImpl extends ServiceImpl<TbUserMoneyMapper, TbUse
                     .money(ObjectUtil.isNull(money.getMoney()) ? new BigDecimal("0.00") : money.getMoney())
                     .userId(ObjectUtil.isNull(money.getUserId()) ? -1 : money.getUserId())
                     .username(StrUtil.isBlank(money.getUsername()) ? "-" : money.getUsername())
+                    .currency(StrUtil.isBlank(money.getCurrency()) ? "GBP" : money.getCurrency())
                     .build());
         } catch (Exception e) {
-            LogUtil.addErrorLog("添加用户捐款error","/user/money/add", JSON.toJSON(e.getMessage()));
-            throw new CustomException(201,e.getMessage());
+            LogUtil.addErrorLog("添加用户捐款error", "/user/money/add", JSON.toJSON(e.getMessage()));
+            throw new CustomException(201, e.getMessage());
         }
         return ResponseResult.success(id);
     }
 
     @Override
     public ResponseResult checkUserMoney(ApiUserMoneyVo money) {
-        LogUtil.addInfoLog("验证用户名是否存在","/user/money/check", JSON.toJSON(money));
+        LogUtil.addInfoLog("验证用户名是否存在", "/user/money/check", JSON.toJSON(money));
         QueryWrapper<TbUser> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("email",money.getUsername());
+        queryWrapper.eq("email", money.getUsername());
         TbUser tbUser = userMapper.selectOne(queryWrapper);
         if (ObjectUtil.isNotNull(tbUser)) return ResponseResult.success(tbUser);
-        return new ResponseResult(201,"username is not exist");
+        return new ResponseResult(201, "username is not exist");
     }
 
     @Override
     public ResponseResult getUserMoneyList(ApiUserMoneyVo money) {
-        LogUtil.addInfoLog("获取用户捐款数据列表","/user/money/list", JSON.toJSON(money));
+        LogUtil.addInfoLog("获取用户捐款数据列表", "/user/money/list", JSON.toJSON(money));
+        long num = money.getPageNum();
         if (ObjectUtil.isNull(money.getPageNum())) money.setPageNum(1);
         if (ObjectUtil.isNull(money.getPageSize())) money.setPageSize(10);
-        IPage page = new Page(money.getPageNum(),money.getPageSize());
-        QueryWrapper<TbUserMoney> queryWrapper = new QueryWrapper<>();
-        if (StrUtil.isNotBlank(money.getSearch())) queryWrapper.ne("is_delete",1).like("username",money.getSearch()).or()
-        .like("charity_name",money.getSearch()).orderByDesc("create_at");
-        IPage selectPage = userMoneyMapper.selectPage(page, queryWrapper);
-        IPageVo build = IPageVo.builder().pageNum(selectPage.getCurrent()).pageSize(selectPage.getSize()).total(selectPage.getTotal()).list(selectPage.getRecords()).build();
-        LogUtil.returnInfoLog("获取用户捐款数据列表(返回数据)","/user/money/list", JSON.toJSON(money));
-        return ResponseResult.success(JSON.toJSON(build));
+        //page
+        if (money.getPageNum() == 1||money.getPageNum() ==0) {
+            money.setPageNum(0l);
+        } else {
+            money.setPageNum((money.getPageNum() - 1) * money.getPageSize());
+        }
+//        QueryWrapper<TbUserMoney> queryWrapper = new QueryWrapper<>();
+//        if (StrUtil.isNotBlank(money.getSearch()))
+//            queryWrapper.ne("is_delete", 1).like("email", money.getSearch()).or()
+//                    .like("charity_name", money.getSearch()).orderByDesc("create_at");
+//        IPage<TbUserMoney> selectPage = userMoneyMapper.selectPage(new Page(money.getPageNum(), money.getPageSize()), queryWrapper);
+        Integer count =  userMoneyMapper.getUserMoneyCount(money);
+        List<ApiUserMoneyVo> userMoneyList = userMoneyMapper.getUserMoneyList(money);
+        IPageVo build = new  IPageVo();
+        build.setPageNum(num);
+        build.setPageSize(money.getPageSize());
+        build.setTotal(count);
+        build.setList(userMoneyList);
+        LogUtil.returnInfoLog("获取用户捐款数据列表(返回数据)", "/user/money/list", build);
+        return ResponseResult.success(build);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResponseResult deleteUserMoney(ApiUserMoneyVo money) {
-        LogUtil.addInfoLog("删除用户捐款数据","/user/money/delete", JSON.toJSON(money));
+        LogUtil.addInfoLog("删除用户捐款数据", "/user/money/delete", JSON.toJSON(money));
         UpdateWrapper<TbUserMoney> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id",money.getId());
-        updateWrapper.set("is_delete",money.getIsDelete());
+        updateWrapper.eq("id", money.getId());
+        updateWrapper.set("is_delete", money.getIsDelete());
         int update = userMoneyMapper.update(TbUserMoney.builder().id(money.getId()).build(), updateWrapper);
         return ResponseResult.success(update);
     }

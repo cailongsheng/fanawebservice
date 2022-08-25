@@ -11,6 +11,7 @@
             ch.`description`,
             ch.`is_show` as isShow,
             ch.`image_url` as imageUrl,
+            ch.`image_url_back` as imageUrlBack,
             ch.`means`,
             ch.`sort_id` as sortId
         from
@@ -58,5 +59,78 @@
         <if test=" vo.isShow != null and vo.isShow !=''">
             and ch.`is_show` = #{vo.isShow}
         </if>
+    </select>
+
+    <select id="getUserList" parameterType="com.fana.entry.vo.AppUserVo" resultType="com.fana.entry.vo.AppUserListVo">
+        SELECT
+          us.id,
+          us.email,
+          us.first_name AS firstName,
+          us.`last_name` AS lastName,
+          us.sex,
+          us.`birthday`,
+          us.avator,
+          us.`is_delete` AS isDelete,
+          GROUP_CONCAT(th.`type`) AS TYPE
+        FROM
+          tb_user us
+          LEFT JOIN tb_third_party_user th
+            ON us.`id` = th.`user_id`
+            WHERE 1=1
+            <if test=" vo.search != null and vo.search !=''">
+                AND (us.`email` LIKE concat('%',#{vo.search},'%') OR us.`first_name` LIKE concat('%',#{vo.search},'%') OR us.last_name like concat('%',#{vo.search},'%'))
+            </if>
+            <if test=" vo.type != null and vo.type == 1">
+                and th.type = 'apple'
+            </if>
+            <if test=" vo.type != null and vo.type == 2">
+                and th.type = 'google'
+            </if>
+        GROUP BY us.id
+        limit #{vo.pageNum},#{vo.pageSize}
+    </select>
+
+    <select id="selectUserList" parameterType="com.fana.entry.vo.RechargeRecordVo"
+            resultType="com.fana.entry.pojo.TbUser">
+        SELECT
+        us.id,
+        us.email,
+        us.first_name AS firstName,
+        us.`last_name` AS lastName,
+        us.sex,
+        us.`birthday`,
+        us.avator,
+        us.`is_delete` AS isDelete,
+        us.`type` AS TYPE
+        FROM
+        tb_user us
+        WHERE 1=1
+        <if test="vo.email != null and vo.email !=''">
+            AND us.`email` LIKE concat('%',#{vo.email},'%')
+        </if>
+        <if test="vo.userName != null and vo.userName !=''">
+            AND concat(us.first_name, us.`last_name`) LIKE concat('%',#{vo.userName},'%')
+        </if>
+    </select>
+
+    <select id="getUserListCount" parameterType="com.fana.entry.vo.AppUserVo" resultType="int">
+    select count(*) from (
+        SELECT
+            us.id
+        FROM
+        tb_user us
+        LEFT JOIN tb_third_party_user th
+        ON us.`id` = th.`user_id`
+        WHERE 1=1
+        <if test=" vo.search != null and vo.search !=''">
+            AND (us.`email` LIKE concat('%',#{vo.search},'%') OR us.`first_name` LIKE concat('%',#{vo.search},'%') OR us.last_name like concat('%',#{vo.search},'%'))
+        </if>
+        <if test=" vo.type != null and vo.type == 1">
+            and th.type = 'apple'
+        </if>
+        <if test=" vo.type != null and vo.type == 2">
+            and th.type = 'google'
+        </if>
+        GROUP BY us.id) a
     </select>
 </mapper>

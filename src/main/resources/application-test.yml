@@ -41,11 +41,11 @@ spring:
     default-property-inclusion: non_null  #返回给前端时自动忽略null值得字段.
   redis:
     host: localhost
-    password: fanaredis
+#    password: fanaredis
     port: 6379
   servlet:
     multipart:
-      max-file-size: 10MB
+      max-file-size: 50MB
       max-request-size: 50MB
 
 #是否激活 swagger true or false
@@ -56,7 +56,7 @@ logging:
   config: classpath:logback-spring-test.xml
 
 fana:
-  ip: http://212.129.248.79:8001/
+  ip: https://file-dev.myfana.com/
   banner:
     imgPath: /app/file/images/banner/
   user:
