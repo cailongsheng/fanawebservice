@@ -1,3 +1,4 @@
+
 spring:
   datasource:
     # 如果存在多个数据源，监控的时候可以通过名字来区分开来
@@ -29,9 +30,9 @@ spring:
     # 要启用PSCache，必须配置大于0，当大于0时，poolPreparedStatements自动触发修改为true
     maxOpenPreparedStatements: -1
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/dhamecha?serverTimezone=Europe/London&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
-    username: dhamecha
-    password: Wembley@8888
+    url: jdbc:mysql://localhost:3306/fana?serverTimezone=Europe/London&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
+    username: root
+    password: Fanafulankefu2022
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
@@ -40,29 +41,25 @@ spring:
     default-property-inclusion: non_null  #返回给前端时自动忽略null值得字段.
   redis:
     host: localhost
-    password: Dhamecharedis
+    #    password: fanaredis
     port: 6379
   servlet:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
 
-
 #是否激活 swagger true or false
 swagger:
-  enable: false
+  enable: true
 
 logging:
   config: classpath:logback-spring-prod.xml
 
 fana:
-  ip: http://212.129.248.79:8001/
+  ip: https://file.myfana.com/
   banner:
     imgPath: /app/file/images/banner/
   user:
     imagePath: /app/file/images/user/
-
-
-
 
 
