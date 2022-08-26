@@ -221,7 +221,7 @@
                                 <resource>
                                     <directory>src/main/resources</directory>
                                     <includes>
-                                        <exclude>**/logback*.xml</exclude>
+                                        <exclude>**/*.xml</exclude>
                                         <exclude>**/*.conf</exclude>
                                         <exclude>**/*.properties</exclude>
                                         <exclude>**/*.yml</exclude>
