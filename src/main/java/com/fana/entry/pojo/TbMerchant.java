@@ -77,6 +77,12 @@ public class TbMerchant extends Model {
     private Integer type;
 
     /**
+     * 返利比率
+     */
+    @TableField("rebate_rate")
+    private Integer rebateRate;
+
+    /**
      * 是否删除 0-未删除 1-已删除
      */
     @TableField("is_delete")
