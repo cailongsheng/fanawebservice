@@ -63,6 +63,11 @@ public class TbMerchantController {
             if (StringUtils.isBlank(merchantVO.getEmail())) {
                 throw new CustomException(Status.PARAMETER_VERIFICATION_NOT_PASS.getCode(), Status.PARAMETER_VERIFICATION_NOT_PASS.getMessage());
             }
+
+            if (Objects.isNull(merchantVO.getRebateRate()) || Objects.equals(merchantVO.getRebateRate(), 0)
+                    || merchantVO.getRebateRate() < 0 || merchantVO.getRebateRate() > 100) {
+                throw new CustomException(Status.PARAMETER_VERIFICATION_NOT_PASS.getCode(), Status.PARAMETER_VERIFICATION_NOT_PASS.getMessage());
+            }
             log.info("FanaWeb|TbMerchantController|addMerchant|requestParameters:{}", JSON.toJSONString(merchantVO));
             ResponseResult responseResult = merchantService.addMerchant(merchantVO);
             log.info("FanaWeb|TbMerchantController|addMerchant|responseResult:{}", JSON.toJSONString(responseResult));
@@ -90,6 +95,11 @@ public class TbMerchantController {
                 throw new CustomException(Status.PARAMETER_VERIFICATION_NOT_PASS.getCode(), Status.PARAMETER_VERIFICATION_NOT_PASS.getMessage());
             }
             checkMerchantTypeAndKey(merchantVO);
+
+            if (Objects.nonNull(merchantVO.getRebateRate()) && (Objects.equals(merchantVO.getRebateRate(), 0)
+                    || merchantVO.getRebateRate() < 0 || merchantVO.getRebateRate() > 100)) {
+                throw new CustomException(Status.PARAMETER_VERIFICATION_NOT_PASS.getCode(), Status.PARAMETER_VERIFICATION_NOT_PASS.getMessage());
+            }
             log.info("FanaWeb|TbMerchantController|updateMerchant|requestParameters:{}", JSON.toJSONString(merchantVO));
             ResponseResult responseResult = merchantService.updateMerchant(merchantVO);
             log.info("FanaWeb|TbMerchantController|updateMerchant|responseResult:{}", JSON.toJSONString(responseResult));
