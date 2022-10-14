@@ -50,6 +50,16 @@ public class FilesController {
 
     }
 
+    @PostMapping("/deleteImage")
+    public ResponseResult deleteImage(String id) {
+        if(id == null){
+            return new ResponseResult(Status.PARAMETER_ERROR.code, "The id did not fill in  ");
+        }
+        return ResponseResult.success(fileUtils.deleteImageByCloudFlare(id));
+
+    }
+
+
     @PostMapping("/uploadVideo")
     public ResponseResult delete(MultipartFile file){
         if(file == null){
@@ -66,7 +76,7 @@ public class FilesController {
         if(StrUtil.isBlank(upload)){
             throw new CustomException(Status.IMAGE_UPLOAD_FAILED.getCode(),Status.IMAGE_UPLOAD_FAILED.getMessage());
         }
-        return ResponseResult.success(upload);
+        return ResponseResult.success("https://customer-3wzcy4n8k3nuefkr.cloudflarestream.com/"+upload+"/iframe?poster=https%3A%2F%2Fcustomer-3wzcy4n8k3nuefkr.cloudflarestream.com%2Fc"+upload+"%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D%26height%3D600");
     }
 
 

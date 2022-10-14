@@ -62,4 +62,10 @@ fana:
   user:
     imagePath: /app/file/images/user/
 
+cloudflare:
+  imagePath: https://imagedelivery.net/2chPAg1PDekJ6oI478IB9Q/
+  imageToken: Bearer WNpB9UIoWdv1JIded9R4EgmTDS6ylC_nyTVzXFmb
+  imageUrl: https://api.cloudflare.com/client/v4/accounts/f8e81a696958a8ddce013def58fc0501/images/v1
 
+  videoUrl: https://api.cloudflare.com/client/v4/accounts/f8e81a696958a8ddce013def58fc0501/stream
+  videoToken: Bearer nbVX_nJqRuzrephOBnMJ5p-8TUuQIT3vDoNTzaMR

@@ -44,15 +44,16 @@ public class TokenInterceptor extends WebMvcConfigurationSupport {
 
 
         registry.addInterceptor(handlerInterceptor)
-                .addPathPatterns(
-                        "/user/**"
-                )
+//                .addPathPatterns(
+//                        "/user/**"
+//                )
                 .excludePathPatterns(
                         "/user/web/login",
                         "/webjars/**",
                         "/swagger-resources/**",
                         "/swagger-ui.html/**",
-                        "/error"
+                        "/error",
+                        "/file/**"
 
                 );
 

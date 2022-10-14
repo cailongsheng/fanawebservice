@@ -45,7 +45,7 @@ spring:
     port: 6379
   servlet:
     multipart:
-      max-file-size: 10MB
+      max-file-size: 50MB
       max-request-size: 50MB
 
 #是否激活 swagger true or false
@@ -64,4 +64,4 @@ cloudflare:
   imageUrl: https://api.cloudflare.com/client/v4/accounts/f8e81a696958a8ddce013def58fc0501/images/v1
 
   videoUrl: https://api.cloudflare.com/client/v4/accounts/f8e81a696958a8ddce013def58fc0501/stream
-  videoToken: nbVX_nJqRuzrephOBnMJ5p-8TUuQIT3vDoNTzaMR
+  videoToken: Bearer nbVX_nJqRuzrephOBnMJ5p-8TUuQIT3vDoNTzaMR
