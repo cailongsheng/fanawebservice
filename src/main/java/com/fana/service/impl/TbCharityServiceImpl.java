@@ -52,6 +52,10 @@ public class TbCharityServiceImpl extends ServiceImpl<TbCharityMapper, TbCharity
     @Value("${fana.ip}")
     private String fanaIp;
 
+    @Value("${cloudflare.imagePath}")
+    private String imagePath;
+
+
     @Override
     public ResponseResult getCharityCategory() {
         List<TbClass> tbClasses = classMapper.selectList(null);
@@ -82,8 +86,8 @@ public class TbCharityServiceImpl extends ServiceImpl<TbCharityMapper, TbCharity
         iPageVo.setList(list);
         list.stream().forEach(a->{
             if(StrUtil.isNotBlank(a.getImageUrl())){
-                a.setImageUrl(fanaIp+"charity/"+a.getImageUrl());
-                a.setImageUrlBack(fanaIp+"charity/"+a.getImageUrlBack());
+                a.setImageUrl(imagePath+a.getImageUrl()+"/public");
+                a.setImageUrlBack(imagePath+a.getImageUrlBack()+"/public");
             }
             try {
                 a.setDescription( new String(a.getDescription().getBytes("ISO-8859-1"),"utf-8") );
@@ -146,9 +150,14 @@ public class TbCharityServiceImpl extends ServiceImpl<TbCharityMapper, TbCharity
         if(ObjectUtil.isEmpty(charity)){
             throw new CustomException(Status.CHARITY_NOT_EXIXT.code,Status.CHARITY_NOT_EXIXT.message);
         }
-//        fileUtils.deleteByFileName(charity.getImageUrl(),"charity");
         charityMapper.deleteById(vo.getId());
         userCharityMapper.delete(new QueryWrapper<TbUserCharity>().lambda().eq(TbUserCharity::getCharityId,charity.getId()));
+        if(StrUtil.isNotBlank(charity.getImageUrl())){
+            fileUtils.deleteImageByCloudFlare(charity.getImageUrl());
+        }
+        if(StrUtil.isNotBlank(charity.getImageUrlBack())){
+            fileUtils.deleteImageByCloudFlare(charity.getImageUrlBack());
+        }
         return ResponseResult.success();
     }
 

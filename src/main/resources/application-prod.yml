@@ -30,9 +30,9 @@ spring:
     # 要启用PSCache，必须配置大于0，当大于0时，poolPreparedStatements自动触发修改为true
     maxOpenPreparedStatements: -1
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/fana?serverTimezone=Europe/London&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://172.28.16.28:3306/fana?serverTimezone=Europe/London&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
     username: root
-    password: Fanafulankefu2022
+    password: jZQE_CxiPEPcK3
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
@@ -40,8 +40,8 @@ spring:
       write-dates-as-timestamps: false
     default-property-inclusion: non_null  #返回给前端时自动忽略null值得字段.
   redis:
-    host: localhost
-    #    password: fanaredis
+    host: 172.28.16.42
+    password: 'T:Hwy97tkvZ:zTE'
     port: 6379
   servlet:
     multipart:

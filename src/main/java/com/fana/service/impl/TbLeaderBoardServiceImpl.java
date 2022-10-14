@@ -54,6 +54,9 @@ public class TbLeaderBoardServiceImpl extends ServiceImpl<TbLeaderBoardMapper, T
     TbCharityMapper charityMapper;
     @Value("${fana.ip}")
     private String ip;
+    @Value("${cloudflare.imagePath}")
+    private String imagePath;
+
 
     @Override
     public ResponseResult getLeaderBoardList(LeaderBoardVo vo) {
@@ -72,7 +75,7 @@ public class TbLeaderBoardServiceImpl extends ServiceImpl<TbLeaderBoardMapper, T
             if (ObjectUtil.isNotNull(tbCharity)) {
                 leaderBoardListVo.setCharityName(tbCharity.getCharity());
                 if(StrUtil.isNotBlank(tbCharity.getImageUrl())) {
-                    leaderBoardListVo.setImageUrl(ip + "charity/" + tbCharity.getImageUrl());
+                    leaderBoardListVo.setImageUrl(imagePath + tbCharity.getImageUrl()+"/public");
                 }
                 TbClass tbClass = classMapper.selectById(tbCharity.getClasss());
                     //categoryName, imageUrl
@@ -163,7 +166,7 @@ public class TbLeaderBoardServiceImpl extends ServiceImpl<TbLeaderBoardMapper, T
             if (ObjectUtil.isNotNull(tbCharity)) {
                 leaderBoardListVo.setCharityName(tbCharity.getCharity());
                 if (StrUtil.isNotBlank(tbCharity.getImageUrl())) {
-                    leaderBoardListVo.setImageUrl(ip + "charity/" + tbCharity.getImageUrl());
+                    leaderBoardListVo.setImageUrl(imagePath + tbCharity.getImageUrl()+"/public");
                 }
                 TbClass tbClass = classMapper.selectById(tbCharity.getClasss());
                 //categoryName, imageUrl

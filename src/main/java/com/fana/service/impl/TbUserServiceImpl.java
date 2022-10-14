@@ -45,6 +45,9 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
     @Resource
     private TbCharityMapper charityMapper;
 
+    @Value("${cloudflare.imagePath}")
+    private String imagePath;
+
     @Override
     public ResponseResult getList(AppUserVo vo) {
         LogUtil.addInfoLog("(app)获取用户列表", "/user/app/list", JSON.toJSON(vo));
@@ -64,7 +67,7 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
 
         userList.stream().forEach(a->{
             if(StrUtil.isNotBlank(a.getAvator())){
-                a.setAvator(fanaIp+"user/"+a.getAvator());
+                a.setAvator(imagePath+a.getAvator()+"/public");
             }
             if(ObjectUtil.isEmpty(a.getSex())) a.setSex(2);
             if(StrUtil.isNotBlank(a.getType())){
@@ -113,7 +116,7 @@ public class TbUserServiceImpl extends ServiceImpl<TbUserMapper, TbUser> impleme
         LogUtil.addInfoLog("(app)获取用户信息详情", "/user/app/select", JSON.toJSON(vo));
         TbUser tbUser = userMapper.selectById(vo.getId());
         if(StrUtil.isNotBlank(tbUser.getAvator())){
-            tbUser.setAvator(fanaIp+"user/"+tbUser.getAvator());
+            tbUser.setAvator(imagePath+tbUser.getAvator()+"/public");
         }
         return ResponseResult.success(tbUser);
     }

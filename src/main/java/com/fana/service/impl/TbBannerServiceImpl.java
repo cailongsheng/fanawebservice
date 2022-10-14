@@ -40,6 +40,9 @@ public class TbBannerServiceImpl extends ServiceImpl<TbBannerMapper, TbBanner> i
     @Value("${fana.ip}")
     private String ip;
 
+    @Value("${cloudflare.imagePath}")
+    private String imagePath;
+
     @Override
     public ResponseResult saveBanner(BannerVo banners) {
                 bannerMapper.insert(TbBanner.builder()
@@ -58,8 +61,8 @@ public class TbBannerServiceImpl extends ServiceImpl<TbBannerMapper, TbBanner> i
         long pageNum = vo.getPageNum() == 1l ? 0 : (vo.getPageNum() - 1) * vo.getPageSize();
         List<ApiBannerAndCharityVo> bannerAndCharty = bannerMapper.getBannerAndCharity(vo,pageNum,vo.getPageSize());
         bannerAndCharty.forEach(banner->{
-            banner.setImagePath(banners+banner.getImagePath());
-            banner.setImageUrl(charity+banner.getImageUrl());
+            banner.setImagePath(imagePath+banner.getImagePath()+"/public");
+            banner.setImageUrl(imagePath+banner.getImageUrl()+"/public");
         });
         IPageVo iPageVo = IPageVo.builder()
                 .total(bannerMapper.selectCount(new QueryWrapper<>()))
@@ -72,22 +75,21 @@ public class TbBannerServiceImpl extends ServiceImpl<TbBannerMapper, TbBanner> i
 
     @Override
     public ResponseResult updateBanner(BannerVo vo) {
-        String uploadPath = null;
-        try {
-            boolean existFile = fileUtils.isExistFile(fileUtils.getFileName(vo.getImagePath()), "banner");
-            if (!existFile && ObjectUtil.isNotEmpty(vo.getFile()))
-                uploadPath = fileUtils.uploadFile(vo.getFile(), "banner");
-            else
-                uploadPath = vo.getImagePath();
-        } catch (IOException e) {
-            LogUtil.addErrorLog("上传图片文件异常", "/banner/update", ip, e.getMessage().substring(0, 200));
-            throw new CustomException(201, "File upload failed.");
-        }
+//        try {
+//            boolean existFile = fileUtils.isExistFile(fileUtils.getFileName(vo.getImagePath()), "banner");
+//            if (!existFile && ObjectUtil.isNotEmpty(vo.getFile()))
+//                uploadPath = fileUtils.uploadFile(vo.getFile(), "banner");
+//            else
+//                uploadPath = vo.getImagePath();
+//        } catch (IOException e) {
+//            LogUtil.addErrorLog("上传图片文件异常", "/banner/update", ip, e.getMessage().substring(0, 200));
+//            throw new CustomException(201, "File upload failed.");
+//        }
 
         try {
             bannerMapper.updateById(TbBanner.builder()
                     .id(vo.getId()).imageName(vo.getImageName())
-                    .imagePath(fileUtils.getFileName(uploadPath))
+                    .imagePath(fileUtils.getFileName(vo.getImagePath()))
                     .target(vo.getTarget())
                     .charityId(vo.getCharityId())
                     .build());

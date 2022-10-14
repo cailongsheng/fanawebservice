@@ -45,12 +45,15 @@ public class TbAchievementTemplateServiceImpl extends ServiceImpl<TbAchievementT
 
     @Resource
     private TbAchievementMapper achievementMapper;
+
+    @Value("${cloudflare.imagePath}")
+    private String imagePath;
     @Override
     public ResponseResult getAchievementTemplate() {
         List<TbAchievementTemplate> list = templateMapper.selectList(null);
         list.stream().forEach(a->{
             if(StrUtil.isNotBlank(a.getAchievementImgUrl())){
-                a.setAchievementImgUrl(fanaIp+"achievement/"+a.getAchievementImgUrl());
+                a.setAchievementImgUrl(imagePath+a.getAchievementImgUrl()+"/public");
             }
         });
         return ResponseResult.success(list);
@@ -73,7 +76,7 @@ public class TbAchievementTemplateServiceImpl extends ServiceImpl<TbAchievementT
         TbAchievementTemplate template = templateMapper.selectById(vo.getId());
         if(ObjectUtil.isEmpty(template)) throw new CustomException(Status.ACHIEVEMENT_TEMPLATE_NOT_EXIST.code,Status.ACHIEVEMENT_TEMPLATE_NOT_EXIST.message);
         if(StrUtil.isNotBlank(template.getAchievementImgUrl()) && !template.getAchievementImgUrl().equals(fileUtils.getFileName(vo.getUrl()))){
-            fileUtils.deleteByFileName(template.getAchievementImgUrl(),"achievement");
+            fileUtils.deleteImageByCloudFlare(template.getAchievementImgUrl());
         }
         template.setAchievementImgUrl(fileUtils.getFileName(vo.getUrl()));
         template.setName(vo.getName());
@@ -86,7 +89,7 @@ public class TbAchievementTemplateServiceImpl extends ServiceImpl<TbAchievementT
     public ResponseResult deleteAchievementTemplate(AchievementTemplateVo vo) {
         TbAchievementTemplate template = templateMapper.selectById(vo.getId());
         if(ObjectUtil.isEmpty(template)) throw new CustomException(Status.ACHIEVEMENT_TEMPLATE_NOT_EXIST.code,Status.ACHIEVEMENT_TEMPLATE_NOT_EXIST.message);
-        fileUtils.deleteByFileName(template.getAchievementImgUrl(),"achievement");
+        fileUtils.deleteImageByCloudFlare(template.getAchievementImgUrl());
         templateMapper.deleteById(template.getId());
         achievementMapper.delete(new QueryWrapper<TbAchievement>().lambda()
             .eq(TbAchievement::getAchievementId,vo.getId()));

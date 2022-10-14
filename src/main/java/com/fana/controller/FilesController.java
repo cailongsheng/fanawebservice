@@ -27,32 +27,46 @@ public class FilesController {
     @Value("${spring.profiles.active}")
     private String active;
 
+    @Value("${cloudflare.imagePath}")
+    private String imagePath;
 
-
-    @PostMapping("/upload")
-    public ResponseResult upload(UploadFileVo vo) {
-        if(vo.getFile() == null){
+    @PostMapping("/uploadImage")
+    public ResponseResult upload(MultipartFile file) {
+        if(file == null){
             return new ResponseResult(Status.PARAMETER_ERROR.code, "The file did not fill in  ");
         }
-        if(StrUtil.isBlank(vo.getPrefix())) return new ResponseResult(Status.PARAMETER_ERROR.code, "The prefix did not fill in  ");
 
         String upload = null;
         try {
-            upload = fileUtils.uploadFile(vo.getFile(),vo.getPrefix());
+            upload = fileUtils.cloudflareImage(file);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if(StrUtil.isBlank(upload)){
+            throw new CustomException(Status.IMAGE_UPLOAD_FAILED.getCode(),Status.IMAGE_UPLOAD_FAILED.getMessage());
+        }
+        return ResponseResult.success(imagePath+upload+"/public");
+
+    }
+
+    @PostMapping("/uploadVideo")
+    public ResponseResult delete(MultipartFile file){
+        if(file == null){
+            return new ResponseResult(Status.PARAMETER_ERROR.code, "The file did not fill in  ");
+        }
+
+        String upload = null;
+        try {
+            upload = fileUtils.cloudflareVideo(file);
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
         if(StrUtil.isBlank(upload)){
             throw new CustomException(Status.IMAGE_UPLOAD_FAILED.getCode(),Status.IMAGE_UPLOAD_FAILED.getMessage());
         }
         return ResponseResult.success(upload);
-
-    }
-
-    @PostMapping("/delete")
-    public Boolean delete(String fileUrl){
-        return fileUtils.deleteByFile(fileUrl);
     }
 
 
