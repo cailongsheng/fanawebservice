@@ -81,7 +81,7 @@ public class TbLeaderBoardServiceImpl extends ServiceImpl<TbLeaderBoardMapper, T
                     //categoryName, imageUrl
                 if(ObjectUtil.isNotEmpty(tbClass))  leaderBoardListVo.setCategoryName(tbClass.getClassType());
             }
-            leader.setActivityImageUrl(path + leader.getActivityImageUrl());
+            leader.setActivityImageUrl(imagePath + leader.getActivityImageUrl()+"/public");
             leader.setCategory(leader.getCategory());
             BeanUtil.copyProperties(leader,leaderBoardListVo);
             list.add(leaderBoardListVo);
