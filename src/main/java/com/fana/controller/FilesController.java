@@ -27,32 +27,56 @@ public class FilesController {
     @Value("${spring.profiles.active}")
     private String active;
 
+    @Value("${cloudflare.imagePath}")
+    private String imagePath;
 
-
-    @PostMapping("/upload")
-    public ResponseResult upload(UploadFileVo vo) {
-        if(vo.getFile() == null){
+    @PostMapping("/uploadImage")
+    public ResponseResult upload(MultipartFile file) {
+        if(file == null){
             return new ResponseResult(Status.PARAMETER_ERROR.code, "The file did not fill in  ");
         }
-        if(StrUtil.isBlank(vo.getPrefix())) return new ResponseResult(Status.PARAMETER_ERROR.code, "The prefix did not fill in  ");
 
         String upload = null;
         try {
-            upload = fileUtils.uploadFile(vo.getFile(),vo.getPrefix());
+            upload = fileUtils.cloudflareImage(file);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         if(StrUtil.isBlank(upload)){
             throw new CustomException(Status.IMAGE_UPLOAD_FAILED.getCode(),Status.IMAGE_UPLOAD_FAILED.getMessage());
         }
-        return ResponseResult.success(upload);
+        return ResponseResult.success(imagePath+upload+"/public");
 
     }
 
-    @PostMapping("/delete")
-    public Boolean delete(String fileUrl){
-        return fileUtils.deleteByFile(fileUrl);
+    @PostMapping("/deleteImage")
+    public ResponseResult deleteImage(String id) {
+        if(id == null){
+            return new ResponseResult(Status.PARAMETER_ERROR.code, "The id did not fill in  ");
+        }
+        return ResponseResult.success(fileUtils.deleteImageByCloudFlare(id));
+
+    }
+
+
+    @PostMapping("/uploadVideo")
+    public ResponseResult delete(MultipartFile file){
+        if(file == null){
+            return new ResponseResult(Status.PARAMETER_ERROR.code, "The file did not fill in  ");
+        }
+
+        String upload = null;
+        try {
+            upload = fileUtils.cloudflareVideo(file);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if(StrUtil.isBlank(upload)){
+            throw new CustomException(Status.IMAGE_UPLOAD_FAILED.getCode(),Status.IMAGE_UPLOAD_FAILED.getMessage());
+        }
+        return ResponseResult.success("https://customer-3wzcy4n8k3nuefkr.cloudflarestream.com/"+upload+"/iframe?poster=https%3A%2F%2Fcustomer-3wzcy4n8k3nuefkr.cloudflarestream.com%2Fc"+upload+"%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D%26height%3D600");
     }
 
 

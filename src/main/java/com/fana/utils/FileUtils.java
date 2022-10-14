@@ -2,6 +2,9 @@ package com.fana.utils;
 
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.Header;
+import cn.hutool.http.HttpRequest;
+import com.alibaba.fastjson.JSONObject;
 import com.fana.config.Status;
 import com.fana.exception.CustomException;
 import lombok.extern.log4j.Log4j2;
@@ -27,6 +30,21 @@ public class FileUtils {
     private String imgPath;
     @Value("${spring.profiles.active}")
     private String active;
+
+    @Value("${cloudflare.imagePath}")
+    private String imagePath;
+
+    @Value("${cloudflare.imageToken}")
+    private String imageToken;
+
+    @Value("${cloudflare.imageUrl}")
+    private String imageUrl;
+
+    @Value("${cloudflare.videoToken}")
+    private String videoToken;
+
+    @Value("${cloudflare.videoUrl}")
+    private String videoUrl;
 
     private HashMap<String, String> pathDev = new HashMap<String, String>() {
         {
@@ -178,12 +196,14 @@ public class FileUtils {
 
     public String getFileName(String fileUrl) {
         try {
-            String s = fileUrl.split("/")[4];
-            return s;
+            if(fileUrl.contains(imagePath)) {
+                String s = fileUrl.split("/")[4];
+                return s;
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return "";
         }
+        return "";
     }
 
     public String uploadAutograph(MultipartFile file) throws IOException {
@@ -231,5 +251,101 @@ public class FileUtils {
         }
     }
 
+    public String cloudflareImage(MultipartFile file) {
+        try {
+            File file1 = transferToFile(file);
+            String body = HttpRequest.post(imageUrl).header(Header.AUTHORIZATION,imageToken)
+                    .contentType("multipart/form-data").form("file",file1).execute().body();
+            log.info(body);
+            /**
+             * result : {"id":"83b4a787-ac40-4f6f-eaf0-61d87960c700","filename":"renren (1).png1305780561539279641.png","uploaded":"2022-10-13T08:25:34.737Z","requireSignedURLs":false,"variants":["https://imagedelivery.net/2chPAg1PDekJ6oI478IB9Q/83b4a787-ac40-4f6f-eaf0-61d87960c700/public"]}
+             * success : true
+             * errors : []
+             * messages : []
+             */
+            JSONObject jsonObject = JSONObject.parseObject(body);
+            if(jsonObject.getBoolean("success")){
+                String id = jsonObject.getJSONObject("result").getString("id");
+                return id;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new CustomException(-1,"图片上传失败");
+        }
+        return null;
+
+    }
+
+    public String cloudflareVideo(MultipartFile file) {
+        try {
+            File file1 = transferToFile(file);
+            String body = HttpRequest.post(videoUrl).header(Header.AUTHORIZATION,videoToken)
+                    .contentType("multipart/form-data").form("file",file1).execute().body();
+            log.info(body);
+            /**
+             * result : {"id":"83b4a787-ac40-4f6f-eaf0-61d87960c700","filename":"renren (1).png1305780561539279641.png","uploaded":"2022-10-13T08:25:34.737Z","requireSignedURLs":false,"variants":["https://imagedelivery.net/2chPAg1PDekJ6oI478IB9Q/83b4a787-ac40-4f6f-eaf0-61d87960c700/public"]}
+             * success : true
+             * errors : []
+             * messages : []
+             */
+            JSONObject jsonObject = JSONObject.parseObject(body);
+            if(jsonObject.getBoolean("success")){
+                String id = jsonObject.getJSONObject("result").getString("uid");
+                return id;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new CustomException(-1,"图片上传失败");
+        }
+        return null;
+
+    }
+
+    public File transferToFile(MultipartFile multipartFile) {
+        //选择用缓冲区来实现这个转换即使用java 创建的临时文件 使用 MultipartFile.transferto()方法 。
+        File file = null;
+        try {
+            String originalFilename = multipartFile.getOriginalFilename();
+            //获取文件后缀
+            String prefix = originalFilename.substring(originalFilename.lastIndexOf("."));
+            file = File.createTempFile(originalFilename, prefix);    //创建零食文件
+            multipartFile.transferTo(file);
+            //删除
+            file.deleteOnExit();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+
+    public boolean deleteImageByCloudFlare(String id){
+        try {
+            String body = HttpRequest.delete(imageUrl+"/"+id).header(Header.AUTHORIZATION,imageToken)
+                    .execute().body();
+            log.info(body);
+            /**
+             * result : {"id":"83b4a787-ac40-4f6f-eaf0-61d87960c700","filename":"renren (1).png1305780561539279641.png","uploaded":"2022-10-13T08:25:34.737Z","requireSignedURLs":false,"variants":["https://imagedelivery.net/2chPAg1PDekJ6oI478IB9Q/83b4a787-ac40-4f6f-eaf0-61d87960c700/public"]}
+             * success : true
+             * errors : []
+             * messages : []
+             */
+            JSONObject jsonObject = JSONObject.parseObject(body);
+            if(jsonObject.getBoolean("success")){
+
+                return true;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new CustomException(-1,"图片删除失败");
+        }
+        return false;
+    }
+
+    public static void main(String[] args) {
+        String url = "https://imagedelivery.net/2chPAg1PDekJ6oI478IB9Q/87394a64-8242-4b34-2703-d4165b490300/public";
+        if(url.contains("https://imagedelivery.net/2chPAg1PDekJ6oI478IB9Q/")) {
+            System.out.println(url.split("/")[4]);
+        }
+    }
 
 }
